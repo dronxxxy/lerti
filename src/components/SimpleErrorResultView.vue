@@ -3,7 +3,7 @@
   import { Divider, Accordion, AccordionContent, AccordionHeader, AccordionPanel } from 'primevue';
   import { type SimpleErrorResult } from '../models/simpleError';
   import SampleView from './SampleView.vue';
-import { ref } from 'vue';
+  import { ref } from 'vue';
 
   const props = defineProps<{
     result: SimpleErrorResult
@@ -43,7 +43,7 @@ import { ref } from 'vue';
                 left: [0, 1],
                 right: [stage.sample.length - 1, stage.sample.length - 2],
               }[stage.missSide] : []"
-              :success="stage.missSide == null"
+              :success="stage.missSide === null"
               :sample="stage.sample"
             />
           </div>

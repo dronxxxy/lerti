@@ -2,9 +2,15 @@
   import useSimpleError from './models/simpleError';
   import SimpleErrorResultView from './components/SimpleErrorResultView.vue';
   import Sample from './components/Sample.vue';
-  import { Button, Card } from 'primevue';
+  import { Button, Card, InputNumber, FloatLabel, Accordion, AccordionHeader, AccordionPanel, AccordionContent } from 'primevue'
+  import { MAX_FRACTION_DIGITS } from './shared/constants';
+  import { ref } from 'vue';
+  import AdditionalUsInput from './components/AdditionalUsInput.vue';
 
   const service = useSimpleError()
+
+  const ADDITIONAL_US = "ADDITIONAL_US"
+  const openedTabs = ref<string[]>([])
 </script>
 
 <template>
@@ -13,10 +19,27 @@
       <Card>
         <template #title>Выборка</template>
         <template #content>
-          <div class="flex flex-row gap-2 items-center">
-            Выборка: <Sample :values="service.values"/>
+          <div class="flex flex-col gap-5 items-stretch pt-2">
+            <div class="flex flex-row gap-4">
+              <Sample v-model="service.values.value"/>
+              <FloatLabel>
+                <InputNumber
+                  v-model="service.machineError.value"
+                  :max-fraction-digits="MAX_FRACTION_DIGITS"
+                />
+                <label>Машинная ошибка</label>
+              </FloatLabel>
+            </div>
+            <Accordion v-model="openedTabs">
+              <AccordionPanel :value="ADDITIONAL_US ">
+                <AccordionHeader>Дополнительные значения u</AccordionHeader>
+                <AccordionContent>
+                  <AdditionalUsInput v-model="service.additionalUs.value" />
+                </AccordionContent>
+              </AccordionPanel>
+            </Accordion>
+            <Button severity="success" raised @click="service.process()">Вычислить</Button>
           </div>
-          <Button severity="success" raised @click="service.process()">Вычислить</Button>
         </template>
       </Card> 
       <Card v-if="service.result.value || service.failed.value">
