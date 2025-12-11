@@ -23,7 +23,7 @@
         <div v-for="(stage, stageIndex) in props.result.rudeCleaning">
           <Divider v-if="stageIndex != 0"></Divider>
           <div v-if="stage.missSide === null">
-            <p>Грубых промахов {{ stageIndex == 1 ? "" : "больше" }} нет, выборка очищена!</p>
+            <p>Грубых промахов {{ stageIndex == 0 ? "" : "больше" }} нет, выборка очищена!</p>
           </div>
           <div v-else>
             <p>
