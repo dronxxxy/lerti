@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import type Decimal from 'decimal.js';
-  import { Badge, Card } from 'primevue';
+  import { Badge } from 'primevue';
+  import { computed } from 'vue';
 
   const props = defineProps<{
     sample: Decimal[],
@@ -8,7 +9,7 @@
     success: boolean,
   }>()
 
-  const defaultColor = props.success ? 'success' : 'secondary'
+  const defaultColor = computed(() => props.success ? 'success' : 'secondary')
 </script>
 
 <template>
