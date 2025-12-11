@@ -26,7 +26,7 @@
 
   const appendRow = () => {
     const count = lastColumnsCount.value == rowSize ?  rowSize : rowSize - lastColumnsCount.value;
-    model.value = [...model.value, ...(new Array(count).map(_ => 0))]
+    model.value = [...model.value, ...(new Array(count).fill(0))]
   }
 </script>
 
@@ -54,7 +54,7 @@
       <div class="shrink-0">
         <InputGroup>
           <Button size="small" severity="info" outlined @click="appendOne">Добавить</Button>
-          <Button size="small" severity="warn" outlined @click="appendRow">Добавить {{ rowSize }}</Button>
+          <Button size="small" severity="warn" outlined @click="appendRow">Добавить строку</Button>
           <Button size="small" severity="danger" outlined @click="clear">Очистить</Button>
         </InputGroup>
       </div>

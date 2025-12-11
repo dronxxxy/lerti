@@ -1,5 +1,6 @@
 import Decimal from "decimal.js";
 import type Sample from "./sample";
+import { AlgorithmError } from "./error";
 
 export type UTable = Record<number, Decimal>
 
@@ -27,15 +28,25 @@ export class CleaningResult {
 }
 
 export class EmptySampleError extends Error {
-  constructor() { super("sample should contain at least one element"); }
+  constructor() {
+    super("sample should contain at least one element");
+  }
 }
 
 export class NotAscendingSampleError extends Error {
-  constructor() { super("sample should be ascending"); }
+  constructor() {
+    super("sample should be ascending");
+  }
 }
 
-export class InvalidSampleLengthError extends Error {
-  constructor(public length: number) { super(`sample length ${length} is invalid`); }
+export class InvalidSampleLengthError extends AlgorithmError {
+  constructor(public length: number) {
+    super(`sample length ${length} is invalid`,
+      "Неподдерживаемый размер выборки",
+      `В ходе расчетов была получена выборка длины ${length}. ` +
+      `Для данной длины отсутствует соотствутствующий параметр u, добавьте его или измените выборку.`
+    );
+  }
 }
 
 function missClearSampleOnce(sample: Sample, uTable: UTable = U_TABLE_95): CleaningResult {

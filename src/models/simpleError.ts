@@ -1,4 +1,5 @@
 import { missClearSample, U_TABLE_95, type CleaningResult } from "@/shared/algorithm/cleanMisses";
+import { AlgorithmError } from "@/shared/algorithm/error";
 import { roundErrorString, roundValueString } from "@/shared/algorithm/rounding";
 import Sample from "@/shared/algorithm/sample";
 import Decimal from "decimal.js";
@@ -11,25 +12,38 @@ export type SimpleErrorResult = {
   value: string,
 }
 
+class UnknownError extends AlgorithmError {
+  constructor(error: any) {
+    if (error instanceof Error) {
+      error = error.message;
+    }
+
+    super(error.message,
+      "Неизвестная ошибка",
+      `В ходе расчетов возникла непредвиденная ошибка! Сообщите о ней разработчику: "${error}"`
+    )
+  }
+}
+
 export default function useSimpleError() {
   const values = ref<number[]>([0, 0, 0, 0, 0]);
   const additionalUs = ref<Record<number, number>>({});
   const machineError = ref<number>(0);
   const result = ref<SimpleErrorResult | null>(null);
-  const failed = ref<boolean>();
+  const error = ref<AlgorithmError | null>(null);
 
   const reset = () => {
-    failed.value = false;
+    error.value = null;
     result.value = null;
   }
 
   const process = () => {
     reset();
-    const sample = new Sample([...values.value].map(Decimal));
+    const sample = new Sample([...values.value].map((value) => new Decimal(value ?? 0)));
     sample.sort();
     const rudeCleaning = missClearSample(sample, {
       ...U_TABLE_95,
-      ...Object.fromEntries(Object.entries(additionalUs.value).map(([key, value]) => [key, new Decimal(value)]))
+      ...Object.fromEntries(Object.entries(additionalUs.value).map(([key, value]) => [key, new Decimal(value ?? 0)]))
     });
     const sampleError = sample.getDerivationError();
     const machineErr = new Decimal(machineError.value);
@@ -50,13 +64,16 @@ export default function useSimpleError() {
     additionalUs,
     machineError,
     result,
-    failed,
+    error,
     process: () => {
       try {
         process()
       } catch (e) {
-        console.log(e)
-        failed.value = true;      
+        if (e instanceof AlgorithmError) {
+          error.value = e;      
+        } else {
+          error.value = new UnknownError(e)
+        }
       }
     }
   }

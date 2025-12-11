@@ -23,7 +23,7 @@
         <div v-for="(stage, stageIndex) in props.result.rudeCleaning">
           <Divider v-if="stageIndex != 0"></Divider>
           <div v-if="stage.missSide === null">
-            <p>Грубых промахов нет, выборка очищена!</p>
+            <p>Грубых промахов {{ stageIndex == 1 ? "" : "больше" }} нет, выборка очищена!</p>
           </div>
           <div v-else>
             <p>
@@ -50,13 +50,9 @@
        </div>
       </AccordionContent>
     </AccordionPanel>
-    <AccordionPanel :value="RESULT">
-      <AccordionHeader>Погрешность</AccordionHeader>
-      <AccordionContent>
-        <p>Погрешность выборки: {{ props.result.sampleError }}</p> 
-        <p>Полная погрешность: {{ props.result.error }}</p>  
-        <p>Среднее значение: {{ props.result.value }}</p>  
-      </AccordionContent>
-    </AccordionPanel>
   </Accordion>
+  <div class="p-3">
+    <p>Погрешность выборки: {{ props.result.sampleError }}</p> 
+    <p>Полная погрешность: {{ props.result.error }}</p>  
+  </div>
 </template>

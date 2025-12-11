@@ -5,7 +5,7 @@
   import { Button, Card, InputNumber, FloatLabel, Accordion, AccordionHeader, AccordionPanel, AccordionContent } from 'primevue'
   import { MAX_FRACTION_DIGITS } from './shared/constants';
   import { ref } from 'vue';
-  import AdditionalUsInput from './components/AdditionalUsInput.vue';
+  import AdditionalUsInput from './components/AdditionalTableInput.vue';
 
   const service = useSimpleError()
 
@@ -34,6 +34,11 @@
               <AccordionPanel :value="ADDITIONAL_US ">
                 <AccordionHeader>Дополнительные значения u</AccordionHeader>
                 <AccordionContent>
+                  <p class="mb-2">
+                    Иногда требуется убрать грубые промахи из выборки нестандартного размера. 
+                    В таких случаях надо явно указать значения u для данных выбросов из выборки
+                  </p>
+
                   <AdditionalUsInput v-model="service.additionalUs.value" />
                 </AccordionContent>
               </AccordionPanel>
@@ -42,18 +47,14 @@
           </div>
         </template>
       </Card> 
-      <Card v-if="service.result.value || service.failed.value">
-        <template #title>Расчет</template>
+      <Card v-if="service.result.value || service.error.value">
+        <template #title>{{ service.error.value ? service.error.value.title : "Расчет" }}</template>
         <template #content>
           <SimpleErrorResultView 
             v-if="service.result.value"
             :result="service.result.value"
           />
-          <div v-if="service.failed.value">
-            <p>
-              Кажется, выборка слишком груба
-            </p>
-          </div>
+          <p v-if="service.error.value">{{ service.error.value.description }}</p>
         </template>
       </Card> 
     </div>

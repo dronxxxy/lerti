@@ -16,7 +16,7 @@
 
 <template>
   <div class="flex flex-col items-stretch">
-    <InputGroup class="mb-4" v-for="n in Object.keys(model)">
+    <InputGroup class="mb-2" v-for="n in Object.keys(model)">
       <InputGroupAddon>N = {{ n }}</InputGroupAddon>
       <InputNumber
         v-model="model[Number(n)]"
@@ -24,7 +24,7 @@
       />
       <Button severity="danger">Удалить</Button>
     </InputGroup>
-    <InputGroup class="mt-3">
+    <InputGroup class="mt-5">
       <FloatLabel class="flex-grow">
         <InputNumber v-model="length" class="w-[100%]"/>
         <label>Длина выборки (N)</label>
