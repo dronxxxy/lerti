@@ -5,11 +5,12 @@
   import { Button, Card, InputNumber, FloatLabel, Accordion, AccordionHeader, AccordionPanel, AccordionContent } from 'primevue'
   import { MAX_FRACTION_DIGITS } from './shared/constants';
   import { ref } from 'vue';
-  import AdditionalUsInput from './components/AdditionalTableInput.vue';
+  import AdditionalTableInput from './components/AdditionalTableInput.vue';
 
   const service = useSimpleError()
 
-  const ADDITIONAL_US = "ADDITIONAL_US"
+  const ADDITIONAL_US = "0"
+  const ADDITIONAL_TS = "1"
   const openedTabs = ref<string[]>([])
 </script>
 
@@ -31,7 +32,7 @@
               </FloatLabel>
             </div>
             <Accordion v-model="openedTabs">
-              <AccordionPanel :value="ADDITIONAL_US ">
+              <AccordionPanel :value="ADDITIONAL_US">
                 <AccordionHeader>Дополнительные значения u</AccordionHeader>
                 <AccordionContent>
                   <p class="mb-2">
@@ -39,7 +40,18 @@
                     В таких случаях надо явно указать значения u для данных выбросов из выборки
                   </p>
 
-                  <AdditionalUsInput v-model="service.additionalUs.value" />
+                  <AdditionalTableInput v-model="service.additionalUs.value" />
+                </AccordionContent>
+              </AccordionPanel>
+              <AccordionPanel :value="ADDITIONAL_TS">
+                <AccordionHeader>Дополнительные значения t</AccordionHeader>
+                <AccordionContent>
+                  <p class="mb-2">
+                    Когда требуется посчитать погрешность по СКО из выборки нестандартного размера
+                    надо явно указать значения t для данной выборки
+                  </p>
+
+                  <AdditionalTableInput v-model="service.additionalTs.value" />
                 </AccordionContent>
               </AccordionPanel>
             </Accordion>

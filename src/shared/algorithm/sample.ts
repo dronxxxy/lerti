@@ -1,4 +1,5 @@
 import Decimal from "decimal.js";
+import { AlgorithmError } from "./error";
 
 export type TTable = Record<number, Decimal>
 
@@ -32,8 +33,14 @@ export class TooSmallToGetDerivationError extends Error {
   constructor() { super("cannot get derivation of sample with length < 2"); }
 }
 
-export class InvalidLengthToGetError extends Error {
-  constructor() { super("unsupported sample size"); }
+export class InvalidLengthToGetError extends AlgorithmError {
+  constructor(length: number) {
+    super("unsupported sample size",
+      "Неподдерживаемый размер выборки",
+      `В ходе расчетов была получена выборка длины ${length}. ` +
+      `Для данной длины отсутствует соотствутствующий параметр t, добавьте его или измените выборку.`
+    );
+  }
 }
 
 export default class Sample {
@@ -70,7 +77,7 @@ export default class Sample {
 
   getDerivationError(tTable: TTable = T_TABLE_95) {
     if (tTable[this.length()] === undefined) {
-      throw new InvalidLengthToGetError();
+      throw new InvalidLengthToGetError(this.length());
     }
     const dispersion = this.dispersion();
     const standardDerivative = dispersion.div(new Decimal(this.length()).sqrt())

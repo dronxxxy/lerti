@@ -1,7 +1,7 @@
 import { missClearSample, U_TABLE_95, type CleaningResult } from "@/shared/algorithm/cleanMisses";
 import { AlgorithmError } from "@/shared/algorithm/error";
 import { roundErrorString, roundValueString } from "@/shared/algorithm/rounding";
-import Sample from "@/shared/algorithm/sample";
+import Sample, { T_TABLE_95 } from "@/shared/algorithm/sample";
 import Decimal from "decimal.js";
 import { ref } from "vue";
 
@@ -28,6 +28,7 @@ class UnknownError extends AlgorithmError {
 export default function useSimpleError() {
   const values = ref<number[]>([0, 0, 0, 0, 0]);
   const additionalUs = ref<Record<number, number>>({});
+  const additionalTs = ref<Record<number, number>>({});
   const machineError = ref<number>(0);
   const result = ref<SimpleErrorResult | null>(null);
   const error = ref<AlgorithmError | null>(null);
@@ -37,15 +38,17 @@ export default function useSimpleError() {
     result.value = null;
   }
 
+  const extendTable = (source: Record<number, Decimal>, additional: Record<number, number>) => ({
+    ...source,
+    ...Object.fromEntries(Object.entries(additional).map(([key, value]) => [key, new Decimal(value ?? 0)]))
+  })
+
   const process = () => {
     reset();
     const sample = new Sample([...values.value].map((value) => new Decimal(value ?? 0)));
     sample.sort();
-    const rudeCleaning = missClearSample(sample, {
-      ...U_TABLE_95,
-      ...Object.fromEntries(Object.entries(additionalUs.value).map(([key, value]) => [key, new Decimal(value ?? 0)]))
-    });
-    const sampleError = sample.getDerivationError();
+    const rudeCleaning = missClearSample(sample, extendTable(U_TABLE_95, additionalUs.value));
+    const sampleError = sample.getDerivationError(extendTable(T_TABLE_95, additionalTs.value));
     const machineErr = new Decimal(machineError.value);
     const error = machineErr.pow(2).add(sampleError.pow(2)).sqrt();
     const value = sample.average();
@@ -62,6 +65,7 @@ export default function useSimpleError() {
     reset,
     values,
     additionalUs,
+    additionalTs,
     machineError,
     result,
     error,
