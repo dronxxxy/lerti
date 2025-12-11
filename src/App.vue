@@ -31,7 +31,7 @@
                 <label>Машинная ошибка</label>
               </FloatLabel>
             </div>
-            <Accordion v-model="openedTabs">
+            <Accordion v-model="openedTabs" multiple>
               <AccordionPanel :value="ADDITIONAL_US">
                 <AccordionHeader>Дополнительные значения u</AccordionHeader>
                 <AccordionContent>

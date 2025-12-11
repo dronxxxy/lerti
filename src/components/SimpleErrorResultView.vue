@@ -51,8 +51,7 @@
       </AccordionContent>
     </AccordionPanel>
   </Accordion>
-  <div class="p-3">
-    <p>Погрешность выборки: {{ props.result.sampleError }}</p> 
-    <p>Полная погрешность: {{ props.result.error }}</p>  
+  <div class="p-3 text-center">
+    <p class="text-2xl mt-3">Значение: <b>{{ props.result.value }} &plusmn; {{ props.result.error }}</b></p>
   </div>
 </template>

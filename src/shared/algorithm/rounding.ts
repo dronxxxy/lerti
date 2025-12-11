@@ -5,7 +5,7 @@ function getErrorLevel(error: Decimal): Decimal {
   let level = error.abs().log(10).floor()
   const roundingFactor = new Decimal(10).pow(level);
   
-  const firstDigit = error.abs().div(roundingFactor).floor();
+  const firstDigit = error.abs().div(roundingFactor).floor().mod(10);
   if (firstDigit.lessThanOrEqualTo(3)) {
     level = level.minus(1);
   }
