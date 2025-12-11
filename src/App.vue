@@ -2,7 +2,7 @@
   import useSimpleError from './models/simpleError';
   import SimpleErrorResultView from './components/SimpleErrorResultView.vue';
   import Sample from './components/Sample.vue';
-  import { Button, Card, InputNumber, FloatLabel, Accordion, AccordionHeader, AccordionPanel, AccordionContent } from 'primevue'
+  import { Button, Card, InputNumber, FloatLabel, Accordion, AccordionHeader, AccordionPanel, AccordionContent, Badge } from 'primevue'
   import { MAX_FRACTION_DIGITS } from './shared/constants';
   import { ref } from 'vue';
   import AdditionalTableInput from './components/AdditionalTableInput.vue';
@@ -60,7 +60,7 @@
         </template>
       </Card> 
       <Card v-if="service.result.value || service.error.value">
-        <template #title>{{ service.error.value ? service.error.value.title : "Расчет" }}</template>
+        <template #title><Badge severity="danger">{{ service.error.value ? service.error.value.title : "Расчет" }}</Badge></template>
         <template #content>
           <SimpleErrorResultView 
             v-if="service.result.value"
