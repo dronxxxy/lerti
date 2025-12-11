@@ -12,6 +12,11 @@
     model.value = { ...model.value, [length.value]: 0 };
     length.value += 1;
   }
+
+  const deleteN = (n: number) => {
+    const {[n]: _, ...copy} = model.value;
+    model.value = copy;
+  }
 </script>
 
 <template>
@@ -22,7 +27,7 @@
         v-model="model[Number(n)]"
         :max-fraction-digits="2"
       />
-      <Button severity="danger">Удалить</Button>
+      <Button severity="danger" @click="() => deleteN(Number(n))">Удалить</Button>
     </InputGroup>
     <InputGroup class="mt-5">
       <FloatLabel class="flex-grow">
