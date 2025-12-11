@@ -60,7 +60,11 @@
         </template>
       </Card> 
       <Card v-if="service.result.value || service.error.value">
-        <template #title><Badge severity="danger">{{ service.error.value ? service.error.value.title : "Расчет" }}</Badge></template>
+        <template #title>
+          <Badge size="xlarge" :severity="service.error.value ? 'danger' : 'success'">
+            {{ service.error.value ? service.error.value.title : "Расчет" }}
+          </Badge>
+        </template>
         <template #content>
           <SimpleErrorResultView 
             v-if="service.result.value"
