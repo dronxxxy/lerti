@@ -2,12 +2,13 @@
   import useSimpleError from './models/simpleError';
   import SimpleErrorResultView from './components/SimpleErrorResultView.vue';
   import Sample from './components/Sample.vue';
-  import { Button, Card, InputNumber, FloatLabel, Accordion, AccordionHeader, AccordionPanel, AccordionContent, Badge, } from 'primevue'
+  import { Button, Card, InputNumber, Accordion, AccordionHeader, AccordionPanel, AccordionContent, Badge, InputGroup, InputGroupAddon } from 'primevue'
   import { MAX_FRACTION_DIGITS } from './shared/constants';
   import { ref } from 'vue';
   import AdditionalTableInput from './components/AdditionalTableInput.vue';
   import { U_TABLE_95 } from './shared/algorithm/cleanMisses';
-import { T_TABLE_95 } from './shared/algorithm/sample';
+  import { T_TABLE_95 } from './shared/algorithm/sample';
+  import DocsButton from './components/DocsButton.vue';
 
   const service = useSimpleError()
 
@@ -18,24 +19,36 @@ import { T_TABLE_95 } from './shared/algorithm/sample';
 
 <template>
   <div class="flex flex-col items-center">
-    <div class="w-3/5 p-5 flex flex-col gap-4">
+    <div class="lg:w-3/5 sm:w-[100%] p-5 flex flex-col gap-4">
       <Card>
-        <template #title>Выборка</template>
+        <template #title>
+          <div class="flex flex-row justify-between">
+            Выборка
+            <DocsButton :page="14" />
+          </div>
+        </template>
         <template #content>
           <div class="flex flex-col gap-5 items-stretch pt-2">
-            <div class="flex flex-row gap-4">
-              <Sample v-model="service.values.value"/>
-              <FloatLabel>
+            <Sample v-model="service.values.value"/>
+
+            <div class="flex flex-row items-center gap-2">
+              <InputGroup>
+                <InputGroupAddon>Приборная погрешность &theta;<sub>x</sub></InputGroupAddon>
                 <InputNumber
                   v-model="service.machineError.value"
                   :max-fraction-digits="MAX_FRACTION_DIGITS"
                 />
-                <label>Машинная ошибка</label>
-              </FloatLabel>
+              </InputGroup>
+              <DocsButton :page="26" />
             </div>
             <Accordion v-model="openedTabs" multiple>
               <AccordionPanel :value="ADDITIONAL_US">
-                <AccordionHeader>Дополнительные значения u</AccordionHeader>
+                <AccordionHeader>
+                  <div class="flex flex-row items-center gap-2">
+                    <span>Дополнительные значения u<sub>P,N</sub></span>
+                    <DocsButton :page="25" />
+                  </div>
+                </AccordionHeader>
                 <AccordionContent>
                   <p class="mb-2">
                     Иногда требуется убрать грубые промахи из выборки нестандартного размера. 
@@ -45,13 +58,13 @@ import { T_TABLE_95 } from './shared/algorithm/sample';
                 </AccordionContent>
               </AccordionPanel>
               <AccordionPanel :value="ADDITIONAL_TS">
-                <AccordionHeader>Дополнительные значения t</AccordionHeader>
+                <AccordionHeader>
+                  <div class="flex flex-row items-center gap-2">
+                    <span>Дополнительные значения t<sub>P,N</sub></span>
+                    <DocsButton :page="21" />
+                  </div>
+                </AccordionHeader>
                 <AccordionContent>
-                  <p class="mb-2">
-                    Когда требуется посчитать погрешность по СКО из выборки нестандартного размера
-                    надо явно указать значения t для данной выборки
-                  </p>
-
                   <AdditionalTableInput v-model="service.additionalTs.value" :default-table="T_TABLE_95" />
                 </AccordionContent>
               </AccordionPanel>
