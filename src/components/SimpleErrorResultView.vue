@@ -36,8 +36,8 @@
                 right: "справа",
                 left: "слева",
               }[stage.missSide] }}:
-              u<sub>{{ { right: stage.sample.length - 1, left: 1, }[stage.missSide] }}</sub> -
-                u<sub>{{ { right: stage.sample.length - 2, left: 0, }[stage.missSide] }}</sub> &approx;
+              x<sub>{{ { right: stage.sample.length - 1, left: 1, }[stage.missSide] }}</sub> -
+                x<sub>{{ { right: stage.sample.length - 2, left: 0, }[stage.missSide] }}</sub> &approx;
               {{stage.allowedDiff}} {{ ">" }} u &middot; R = {{stage.u}} &middot; {{ {
                 right: stage.rightDiff,
                 left: stage.leftDiff,
