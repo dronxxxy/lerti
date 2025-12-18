@@ -41,11 +41,18 @@ export class NotAscendingSampleError extends Error {
 
 export class InvalidSampleLengthError extends AlgorithmError {
   constructor(public length: number) {
-    super(`sample length ${length} is invalid`,
-      "Неподдерживаемый размер выборки",
-      `В ходе расчетов была получена выборка длины ${length}. ` +
-      `Для данной длины отсутствует соотствутствующий параметр u, добавьте его или измените выборку.`
-    );
+    if (length > 2) {
+      super(`sample length ${length} is invalid`,
+        "Неподдерживаемый размер выборки",
+        `В ходе расчетов была получена выборка длины ${length}. ` +
+        `Для данной длины отсутствует соотствутствующий параметр u, добавьте его или измените выборку.`
+      );
+    } else {
+      super(`sample length ${length} is invalid`,
+        "Неподдерживаемый размер выборки",
+        `Кажется, данная выборка имеет слишком много грубых промахов. Длина очищенной выборки: ${length}`
+      );
+    }
   }
 }
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { MAX_FRACTION_DIGITS } from '@/shared/constants';
-  import { Button, InputNumber, InputGroup, InputGroupAddon } from 'primevue';
+  import { Button, InputNumber, InputGroup, InputGroupAddon, IftaLabel  } from 'primevue';
   import { computed, onMounted, ref } from 'vue';
 
   const model = defineModel<number[]>({
@@ -40,12 +40,14 @@
         v-for="columnId in rowSize"
         :key="columnId"
       >
-        <InputNumber
-          v-if="rowId != rowsCount || columnId <= lastColumnsCount"
-          v-model="model[(rowId - 1) * rowSize + (columnId - 1)]"
-          placeholder="0"
-          :max-fraction-digits="MAX_FRACTION_DIGITS"
-        />
+        <IftaLabel v-if="rowId != rowsCount || columnId <= lastColumnsCount">
+          <InputNumber
+            v-model="model[(rowId - 1) * rowSize + (columnId - 1)]"
+            placeholder="0"
+            :max-fraction-digits="MAX_FRACTION_DIGITS"
+          />
+          <label>Элемент x<sub>{{(rowId - 1) * rowSize + (columnId - 1)}}</sub></label>
+        </IftaLabel>
         <InputGroupAddon v-else class="sample-cell"> &ndash; </InputGroupAddon>
       </template>
     </InputGroup>

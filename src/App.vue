@@ -2,10 +2,12 @@
   import useSimpleError from './models/simpleError';
   import SimpleErrorResultView from './components/SimpleErrorResultView.vue';
   import Sample from './components/Sample.vue';
-  import { Button, Card, InputNumber, FloatLabel, Accordion, AccordionHeader, AccordionPanel, AccordionContent, Badge } from 'primevue'
+  import { Button, Card, InputNumber, FloatLabel, Accordion, AccordionHeader, AccordionPanel, AccordionContent, Badge, } from 'primevue'
   import { MAX_FRACTION_DIGITS } from './shared/constants';
   import { ref } from 'vue';
   import AdditionalTableInput from './components/AdditionalTableInput.vue';
+  import { U_TABLE_95 } from './shared/algorithm/cleanMisses';
+import { T_TABLE_95 } from './shared/algorithm/sample';
 
   const service = useSimpleError()
 
@@ -39,8 +41,7 @@
                     Иногда требуется убрать грубые промахи из выборки нестандартного размера. 
                     В таких случаях надо явно указать значения u для данных выбросов из выборки
                   </p>
-
-                  <AdditionalTableInput v-model="service.additionalUs.value" />
+                  <AdditionalTableInput v-model="service.additionalUs.value" :default-table="U_TABLE_95" />
                 </AccordionContent>
               </AccordionPanel>
               <AccordionPanel :value="ADDITIONAL_TS">
@@ -51,7 +52,7 @@
                     надо явно указать значения t для данной выборки
                   </p>
 
-                  <AdditionalTableInput v-model="service.additionalTs.value" />
+                  <AdditionalTableInput v-model="service.additionalTs.value" :default-table="T_TABLE_95" />
                 </AccordionContent>
               </AccordionPanel>
             </Accordion>

@@ -1,10 +1,15 @@
 <script setup lang="ts">
-  import { InputNumber, Button, FloatLabel, InputGroup, InputGroupAddon } from 'primevue';
+  import type Decimal from 'decimal.js';
+  import { InputNumber, Button, FloatLabel, InputGroup, InputGroupAddon, Accordion, AccordionPanel, AccordionHeader, AccordionContent, DataTable, Column } from 'primevue';
   import { ref } from 'vue';
 
   const model = defineModel<Record<number, number>>({
     default: {}
   })
+
+  const props = defineProps<{
+    defaultTable: Record<number, Decimal>
+  }>()
 
   const length = ref<number>(6)
 
@@ -20,7 +25,18 @@
 </script>
 
 <template>
-  <div class="flex flex-col items-stretch">
+  <Accordion multiple>
+    <AccordionPanel value="0">
+      <AccordionHeader>Стандартные значения</AccordionHeader>
+      <AccordionContent>
+        <DataTable :value="Object.entries(props.defaultTable).map(([n, u]) => ({ n, u }))">
+          <Column field="n" header="Длина выборки"></Column>
+          <Column field="u" header="Значение"></Column>
+        </DataTable>
+      </AccordionContent>
+    </AccordionPanel>
+  </Accordion>
+  <div class="flex flex-col items-stretch mt-2">
     <InputGroup class="mb-2" v-for="n in Object.keys(model)">
       <InputGroupAddon>N = {{ n }}</InputGroupAddon>
       <InputNumber
