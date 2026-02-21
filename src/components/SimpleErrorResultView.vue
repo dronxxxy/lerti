@@ -21,7 +21,7 @@
       <AccordionHeader>
         <div class="flex flex-row items-center gap-2">
           <span>Устранение грубых погрешностей</span>
-          <DocsButton :page="25" />
+          <DocsButton :page="25" module="2.7." />
         </div>
       </AccordionHeader>
       <AccordionContent>

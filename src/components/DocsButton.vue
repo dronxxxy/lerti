@@ -4,7 +4,8 @@
   import { Button } from 'primevue';
 
   const props = defineProps<{
-    page: number
+    page: number,
+    module?: string
   }>()
 </script>
 
@@ -16,7 +17,7 @@
     icon="pi pi-info-circle"
     aria-label="Save"
     severity="info"
-    @click="openUrl(buildPdfPath(props.page))"
+    @click="openUrl(buildPdfPath(props.page, props.module))"
   ></Button>
 </template>
 

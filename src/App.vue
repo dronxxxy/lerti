@@ -24,7 +24,7 @@
         <template #title>
           <div class="flex flex-row justify-between">
             Выборка
-            <DocsButton :page="14" />
+            <DocsButton :page="14" module="2.2." />
           </div>
         </template>
         <template #content>
@@ -39,21 +39,17 @@
                   :max-fraction-digits="MAX_FRACTION_DIGITS"
                 />
               </InputGroup>
-              <DocsButton :page="26" />
+              <DocsButton :page="26" module="2.8." />
             </div>
             <Accordion v-model="openedTabs" multiple>
               <AccordionPanel :value="ADDITIONAL_US">
                 <AccordionHeader>
                   <div class="flex flex-row items-center gap-2">
                     <span>Дополнительные значения u<sub>P,N</sub></span>
-                    <DocsButton :page="25" />
+                    <DocsButton :page="25" module="2.7." />
                   </div>
                 </AccordionHeader>
                 <AccordionContent>
-                  <p class="mb-2">
-                    Иногда требуется убрать грубые промахи из выборки нестандартного размера. 
-                    В таких случаях надо явно указать значения u для данных выбросов из выборки
-                  </p>
                   <AdditionalTableInput v-model="service.additionalUs.value" :default-table="U_TABLE_95" />
                 </AccordionContent>
               </AccordionPanel>
@@ -61,7 +57,7 @@
                 <AccordionHeader>
                   <div class="flex flex-row items-center gap-2">
                     <span>Дополнительные значения t<sub>P,N</sub></span>
-                    <DocsButton :page="21" />
+                    <DocsButton :page="21" module="2.6." />
                   </div>
                 </AccordionHeader>
                 <AccordionContent>
