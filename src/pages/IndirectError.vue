@@ -2,5 +2,5 @@
 </script>
 
 <template>
-    <p>TODO: indirect errors</p>
+  <p>TODO: indirect errors</p>
 </template>
