@@ -4,6 +4,7 @@ import { PrimeVue } from '@primevue/core'
 import Aura from '@primeuix/themes/aura';
 import './assets/index.css'
 import 'primeicons/primeicons.css';
+import router from './router';
 
 createApp(App)
   .use(PrimeVue, {
@@ -16,4 +17,5 @@ createApp(App)
       }
     }
   })
+  .use(router)
   .mount('#app')
