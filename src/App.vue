@@ -1,90 +1,69 @@
 <script setup lang="ts">
-  import useSimpleError from './models/simpleError';
-  import SimpleErrorResultView from './components/SimpleErrorResultView.vue';
-  import Sample from './components/Sample.vue';
-  import { Button, Card, InputNumber, Accordion, AccordionHeader, AccordionPanel, AccordionContent, Badge, InputGroup, InputGroupAddon } from 'primevue'
-  import { MAX_FRACTION_DIGITS } from './shared/constants';
-  import { ref } from 'vue';
-  import AdditionalTableInput from './components/AdditionalTableInput.vue';
-  import { U_TABLE_95 } from './shared/algorithm/cleanMisses';
-  import { T_TABLE_95 } from './shared/algorithm/sample';
-  import DocsButton from './components/DocsButton.vue';
+  import { Toolbar } from 'primevue';
+  import SelectButton from 'primevue/selectbutton';
+  import { RouterView, useRouter, useRoute } from 'vue-router';
+  import { ref, watch, onMounted, Transition } from 'vue';
 
-  const service = useSimpleError()
+  const router = useRouter();
+  const route = useRoute();
 
-  const ADDITIONAL_US = "0"
-  const ADDITIONAL_TS = "1"
-  const openedTabs = ref<string[]>([])
+  const tools = [
+    {
+      name: "Прямые погрешности",
+      path: "/simpleError",
+    },
+    {
+      name: "Косвенные погрешности",
+      path: "/indirectError",
+    },
+  ];
+
+  const selectedTool = ref<string | null>(null);
+
+  const updateSelectedFromPath = () => {
+    const tool = tools.find(t => t.path === route.path);
+    selectedTool.value = tool ? tool.name : null;
+  };
+
+  watch(selectedTool, (name) => {
+    if (name) {
+      const tool = tools.find(t => t.name === name);
+      if (tool) router.push(tool.path);
+    }
+  });
+
+  onMounted(() => updateSelectedFromPath());
+  watch(() => route.path, () => updateSelectedFromPath());
 </script>
 
 <template>
-  <div class="flex flex-col items-center">
-    <div class="lg:w-3/5 sm:w-[100%] p-5 flex flex-col gap-4">
-      <Card>
-        <template #title>
-          <div class="flex flex-row justify-between">
-            Выборка
-            <DocsButton :page="14" module="2.2." />
-          </div>
-        </template>
-        <template #content>
-          <div class="flex flex-col gap-5 items-stretch pt-2">
-            <Sample v-model="service.values.value"/>
+  <Toolbar>
+    <template #start>
+      <img src="/favicon.ico" width="40px" />
+    </template>
+    <template #center>
+      <SelectButton
+        v-model="selectedTool"
+        name="selection"
+        :options="tools.map((e) => e.name)"
+      />
+    </template>
+  </Toolbar>
 
-            <div class="flex flex-row items-center gap-2">
-              <InputGroup>
-                <InputGroupAddon>Приборная погрешность &theta;<sub>x</sub></InputGroupAddon>
-                <InputNumber
-                  v-model="service.machineError.value"
-                  :max-fraction-digits="MAX_FRACTION_DIGITS"
-                />
-              </InputGroup>
-              <DocsButton :page="26" module="2.8." />
-            </div>
-            <Accordion v-model="openedTabs" multiple>
-              <AccordionPanel :value="ADDITIONAL_US">
-                <AccordionHeader>
-                  <div class="flex flex-row items-center gap-2">
-                    <span>Дополнительные значения u<sub>P,N</sub></span>
-                    <DocsButton :page="25" module="2.7." />
-                  </div>
-                </AccordionHeader>
-                <AccordionContent>
-                  <AdditionalTableInput v-model="service.additionalUs.value" :default-table="U_TABLE_95" />
-                </AccordionContent>
-              </AccordionPanel>
-              <AccordionPanel :value="ADDITIONAL_TS">
-                <AccordionHeader>
-                  <div class="flex flex-row items-center gap-2">
-                    <span>Дополнительные значения t<sub>P,N</sub></span>
-                    <DocsButton :page="21" module="2.6." />
-                  </div>
-                </AccordionHeader>
-                <AccordionContent>
-                  <AdditionalTableInput v-model="service.additionalTs.value" :default-table="T_TABLE_95" />
-                </AccordionContent>
-              </AccordionPanel>
-            </Accordion>
-            <Button severity="success" raised @click="service.process()">Вычислить</Button>
-          </div>
-        </template>
-      </Card> 
-      <Card v-if="service.result.value || service.error.value">
-        <template #title>
-          <Badge size="xlarge" :severity="service.error.value ? 'danger' : 'success'">
-            {{ service.error.value ? service.error.value.title : "Расчет" }}
-          </Badge>
-        </template>
-        <template #content>
-          <SimpleErrorResultView 
-            v-if="service.result.value"
-            :result="service.result.value"
-          />
-          <p v-if="service.error.value">{{ service.error.value.description }}</p>
-        </template>
-      </Card> 
-    </div>
-  </div>
+  <RouterView v-slot="{ Component }">
+    <Transition name="scale" mode="out-in">
+      <component :is="Component" :key="route.path" />
+    </Transition>
+  </RouterView>
 </template>
 
-<style scoped></style>
+<style scoped>
+.scale-enter-active, .scale-leave-active {
+  transition: all 0.2s ease;
+}
+
+.scale-enter-from, .scale-leave-to {
+  opacity: 0;
+  transform: scale(0.9);
+}
+</style>

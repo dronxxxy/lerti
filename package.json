@@ -22,7 +22,8 @@
     "primeicons": "^7.0.0",
     "primevue": "^4.5.1",
     "tailwindcss": "^3.0.23",
-    "vue": "^3.5.22"
+    "vue": "^3.5.22",
+    "vue-router": "^4.6.4"
   },
   "devDependencies": {
     "@tsconfig/node22": "^22.0.2",
