@@ -16,6 +16,10 @@
       name: "Косвенные погрешности",
       path: "/indirectError",
     },
+    {
+      name: "Аппроксимация",
+      path: "/approximation",
+    },
   ];
 
   const selectedTool = ref<string | null>(null);
