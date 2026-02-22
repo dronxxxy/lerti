@@ -41,7 +41,7 @@
 </script>
 
 <template>
-  <Toolbar>
+  <Toolbar class="m-3 mb-5">
     <template #start>
       <img src="/favicon.ico" width="40px" />
     </template>

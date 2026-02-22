@@ -19,7 +19,7 @@
 
 <template>
   <div class="flex flex-col items-center">
-    <div class="lg:w-3/5 sm:w-[100%] p-5 flex flex-col gap-4">
+    <div class="lg:w-3/5 sm:w-[100%] p-5 pt-0 flex flex-col gap-4">
       <Card>
         <template #title>
           <div class="flex flex-row justify-between">
