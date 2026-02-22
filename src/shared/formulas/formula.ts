@@ -1,0 +1,28 @@
+import Decimal from "decimal.js";
+import type { FormulaWriter } from "./writer";
+
+export abstract class Context {
+  constructor(private variables: Record<string, Decimal>) {}
+
+  public getVariable(name: string) {
+    if (this.variables[name] === undefined)
+      throw new Error(`unregistered variable ${name}`);
+
+    return this.variables[name];
+  }
+}
+
+export abstract class Formula {
+  public abstract buildDerivative(): Formula | null;
+  public abstract execute(context: Context): Decimal;
+  public abstract write(writer: FormulaWriter): void;
+
+  protected abstract getChildren(): IterableIterator<Formula>;
+
+  public *iterate(): IterableIterator<Formula> {
+    for (const formula of this.getChildren()) {
+      yield formula;
+      for (const child of formula.getChildren()) yield child;
+    }
+  }
+}
