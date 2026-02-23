@@ -7,7 +7,6 @@ import Decimal from "decimal.js";
 import { VariableFormula } from "../impl/variable";
 import { PowFormula } from "../impl/pow";
 import { LnFormula } from "../impl/ln";
-import { AsciiFormulaWriter } from "../writers/ascii";
 
 export class InvalidLatexException extends AlgorithmError {
   constructor (exception: string) {
@@ -68,14 +67,15 @@ function astNodeParseId(node: Node): Formula {
 }
 
 function astNodeParseFunction(node: Node): Formula {
-  if (node.args.length != 0)
+  if (node.args.length != 1)
     throw new UnknownLatexFeature(`FunctionNode.args.length = ${node.args.length}`, node);
   const Function = {
     "ln": LnFormula,
   }[node.name!];
   if (Function === undefined) 
     throw new UnknownLatexFeature(`FunctionNode.name = ${node.name}`, node);
-  return new Function(node.args[0]);
+  const arg = astNodeParse(node.args[0]);
+  return new Function(arg);
 }
 
 function astNodeParse(node: Node): Formula {
