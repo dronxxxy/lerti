@@ -7,6 +7,7 @@ import Decimal from "decimal.js";
 import { VariableFormula } from "../impl/variable";
 import { PowFormula } from "../impl/pow";
 import { LnFormula } from "../impl/ln";
+import { UnaryMinusFormula } from "../impl/unary";
 
 export class InvalidLatexException extends AlgorithmError {
   constructor (exception: string) {
@@ -39,8 +40,18 @@ function astNodeParseOperator(node: Node): Formula {
       'cdot': MultiplyOperatorFormula,
     }[node.name ?? ""]; 
     if (Operator === undefined) 
-      throw new UnknownLatexFeature(`OperatorNode.name = ${node.name}`, node);
+      throw new UnknownLatexFeature(`OperatorNode(prefix).name = ${node.name}`, node);
     return new Operator(left, right);
+  }
+
+  if (node.operatorType === 'prefix') {
+    const inner = astNodeParse(node.args[0]);
+    const Operator = {
+      '-': UnaryMinusFormula,
+    }[node.name ?? ""]
+    if (Operator === undefined) 
+      throw new UnknownLatexFeature(`OperatorNode(infix).name = ${node.name}`, node);
+    return new Operator(inner);
   }
 
   throw new UnknownLatexFeature(`OperatorNode.operatorType = ${node.operatorType}`, node);
