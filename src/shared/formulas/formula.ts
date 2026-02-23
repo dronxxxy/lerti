@@ -1,7 +1,7 @@
 import Decimal from "decimal.js";
 import type { FormulaWriter } from "./writer";
 
-export abstract class Context {
+export abstract class ExecutionContext {
   constructor(private variables: Record<string, Decimal>) {}
 
   public getVariable(name: string) {
@@ -14,7 +14,7 @@ export abstract class Context {
 
 export abstract class Formula {
   public abstract buildDerivative(): Formula | null;
-  public abstract execute(context: Context): Decimal;
+  public abstract execute(context: ExecutionContext): Decimal;
   public abstract write(writer: FormulaWriter): void;
 
   protected abstract getChildren(): IterableIterator<Formula>;

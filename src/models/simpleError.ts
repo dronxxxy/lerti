@@ -1,7 +1,8 @@
 import { missClearSample, U_TABLE_95, type CleaningResult } from "@/shared/algorithm/cleanMisses";
-import { AlgorithmError } from "@/shared/algorithm/error";
+import { AlgorithmError } from "@/shared/error";
 import { roundErrorString, roundValueString } from "@/shared/algorithm/rounding";
 import Sample, { T_TABLE_95 } from "@/shared/algorithm/sample";
+import { catchAlgorithmError } from "@/shared/error";
 import Decimal from "decimal.js";
 import { ref } from "vue";
 
@@ -10,19 +11,6 @@ export type SimpleErrorResult = {
   sampleError: Decimal,
   error: string,
   value: string,
-}
-
-class UnknownError extends AlgorithmError {
-  constructor(error: any) {
-    if (error instanceof Error) {
-      error = error.message;
-    }
-
-    super(error.message,
-      "Неизвестная ошибка",
-      `В ходе расчетов возникла непредвиденная ошибка! Сообщите о ней разработчику: "${error}"`
-    )
-  }
 }
 
 export default function useSimpleError() {
@@ -69,16 +57,6 @@ export default function useSimpleError() {
     machineError,
     result,
     error,
-    process: () => {
-      try {
-        process()
-      } catch (e) {
-        if (e instanceof AlgorithmError) {
-          error.value = e;      
-        } else {
-          error.value = new UnknownError(e)
-        }
-      }
-    }
+    process: () => error.value = catchAlgorithmError(process),
   }
 }

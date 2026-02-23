@@ -5,6 +5,7 @@ import { AddOperatorFormula, DivideOperatorFormula, MultiplyOperatorFormula, Sub
 import { ConstantNumberFormula } from "../impl/constant";
 import Decimal from "decimal.js";
 import { VariableFormula } from "../impl/variable";
+import { PowFormula } from "../impl/pow";
 
 class InvalidLatexException extends AlgorithmError {
   constructor () {
@@ -33,6 +34,7 @@ function astNodeParseOperator(node: Node): Formula {
       '+': AddOperatorFormula,
       '/': DivideOperatorFormula,
       '*': MultiplyOperatorFormula,
+      '^': PowFormula,
       'cdot': MultiplyOperatorFormula,
     }[node.name ?? ""]; 
     if (Operator === undefined) 

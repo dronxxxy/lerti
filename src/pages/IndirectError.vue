@@ -2,11 +2,9 @@
   import CardList from '@/components/CardList.vue';
   import { Card } from 'primevue';
   import FormulaInput from '@/components/FormulaInput.vue';
-  import { ref, watch } from 'vue';
+  import useIndirectError from '@/models/indirectError';
 
-  const formula = ref("")
-
-  watch(formula, (e) => console.log(e))
+  const service = useIndirectError(); 
 </script>
 
 <template>
@@ -17,7 +15,10 @@
       </template>
       <template #content>
         <div class="flex flex-row justify-center">
-          <FormulaInput v-model="formula" class="w-[50%]" />
+          <FormulaInput
+            v-model="service.formula.value"
+            class="w-[50%]"
+          />
         </div>
       </template>
     </Card>
