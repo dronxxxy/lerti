@@ -1,4 +1,3 @@
-<!-- Sample.vue -->
 <script setup lang="ts">
   import { MAX_FRACTION_DIGITS } from '@/shared/constants';
   import { Button, InputNumber, InputGroup, InputGroupAddon, IftaLabel  } from 'primevue';
