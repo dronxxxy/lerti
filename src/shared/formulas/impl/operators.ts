@@ -1,5 +1,5 @@
 import Decimal from "decimal.js";
-import { ExecutionContext, Formula } from "../formula";
+import { DerivativeContext, ExecutionContext, Formula } from "../formula";
 import { PowFormula } from "./pow";
 import { FormulaWriter } from "../writer";
 import { ConstantNumberFormula } from "./constant";
@@ -31,9 +31,9 @@ abstract class OperatorFormula extends Formula {
 }
 
 export class AddOperatorFormula extends OperatorFormula {
-  public buildDerivative(): Formula | null {
-    const left = this.left.buildDerivative();
-    const right = this.right.buildDerivative();
+  public buildDerivative(context: DerivativeContext): Formula | null {
+    const left = this.left.buildDerivative(context);
+    const right = this.right.buildDerivative(context);
     if (!left) return right;
     if (!right) return left;
     return new AddOperatorFormula(left, right);
@@ -51,9 +51,9 @@ export class AddOperatorFormula extends OperatorFormula {
 }
 
 export class SubtractOperatorFormula extends OperatorFormula {
-  public buildDerivative(): Formula | null {
-    const left = this.left.buildDerivative();
-    const right = this.right.buildDerivative();
+  public buildDerivative(context: DerivativeContext): Formula | null {
+    const left = this.left.buildDerivative(context);
+    const right = this.right.buildDerivative(context);
     if (!left) return right;
     if (!right) return left;
     return new SubtractOperatorFormula(left, right);
@@ -71,9 +71,9 @@ export class SubtractOperatorFormula extends OperatorFormula {
 }
 
 export class MultiplyOperatorFormula extends OperatorFormula {
-  public buildDerivative(): Formula | null {
-    const left = this.left.buildDerivative();
-    const right = this.right.buildDerivative();
+  public buildDerivative(context: DerivativeContext): Formula | null {
+    const left = this.left.buildDerivative(context);
+    const right = this.right.buildDerivative(context);
 
     if (!left) {
       if (!right) return null;
@@ -102,9 +102,9 @@ export class MultiplyOperatorFormula extends OperatorFormula {
 }
 
 export class DivideOperatorFormula extends OperatorFormula {
-  public buildDerivative(): Formula | null {
-    const left = this.left.buildDerivative();
-    const right = this.right.buildDerivative();
+  public buildDerivative(context: DerivativeContext): Formula | null {
+    const left = this.left.buildDerivative(context);
+    const right = this.right.buildDerivative(context);
 
     if (!left) {
       if (!right) return this;

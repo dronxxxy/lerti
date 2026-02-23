@@ -1,5 +1,5 @@
 import type Decimal from "decimal.js";
-import { ExecutionContext, Formula } from "../formula";
+import { DerivativeContext, ExecutionContext, Formula } from "../formula";
 import type { FormulaWriter } from "../writer";
 
 export class ConstantNumberFormula extends Formula {
@@ -7,7 +7,7 @@ export class ConstantNumberFormula extends Formula {
     super();
   }
 
-  public buildDerivative(): Formula | null {
+  public buildDerivative(context: DerivativeContext): Formula | null {
     return null;
   }
 

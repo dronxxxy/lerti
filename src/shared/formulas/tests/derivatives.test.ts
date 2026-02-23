@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { Formula } from "../formula";
+import { DerivativeContext, Formula } from "../formula";
 import { AsciiFormulaWriter } from "../writers/ascii";
 import { AddOperatorFormula, MultiplyOperatorFormula } from "../impl/operators";
 import { VariableFormula } from "../impl/variable";
@@ -9,15 +9,15 @@ import { LnFormula } from "../impl/ln";
 
 function testDerivative(formula: Formula, output: string) {
   const writer = new AsciiFormulaWriter();
-  const derivative = formula.buildDerivative();
-  const content = derivative ? derivative.write(writer) : "0";
+  const derivative = formula.buildDerivative(new DerivativeContext("x"));
+  derivative?.write(writer);
   expect(writer.get()).toBe(output);
 }
 
 test("x + y", () =>
   testDerivative(
     new AddOperatorFormula(new VariableFormula("x"), new VariableFormula("y")),
-    "1+1",
+    "1",
   ));
 
 test("ln(x * (2 * z)) * (1 + 2 + y)", () =>
@@ -40,5 +40,5 @@ test("ln(x * (2 * z)) * (1 + 2 + y)", () =>
         new VariableFormula("y"),
       ),
     ),
-    "((((1*(2*z))+((1*2)*x))/(x*(2*z)))*((1+2)+y))+(1*ln(x*(2*z)))",
+    "((1*(2*z))/(x*(2*z)))*((1+2)+y)",
   ));

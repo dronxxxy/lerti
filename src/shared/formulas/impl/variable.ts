@@ -1,5 +1,5 @@
 import Decimal from "decimal.js";
-import { ExecutionContext, Formula } from "../formula";
+import { DerivativeContext, ExecutionContext, Formula } from "../formula";
 import { ConstantNumberFormula } from "./constant";
 import type { FormulaWriter } from "../writer";
 
@@ -20,8 +20,10 @@ export class VariableFormula extends Formula {
     writer.writeVariable(this.name);
   }
 
-  public buildDerivative(): Formula | null {
-    return new ConstantNumberFormula(new Decimal(1));
+  public buildDerivative(context: DerivativeContext): Formula | null {
+    if (context.byVariable == this.name)
+      return new ConstantNumberFormula(new Decimal(1));
+    return null;
   }
 
   protected *getChildren(): IterableIterator<Formula> {}

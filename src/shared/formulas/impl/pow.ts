@@ -1,11 +1,6 @@
 import Decimal from "decimal.js";
-import { ExecutionContext, Formula } from "../formula";
-import {
-  AddOperatorFormula,
-  MultiplyOperatorFormula,
-  SubtractOperatorFormula,
-} from "./operators";
-import { ConstantNumberFormula } from "./constant";
+import { DerivativeContext, ExecutionContext, Formula } from "../formula";
+import { MultiplyOperatorFormula } from "./operators";
 import type { FormulaWriter } from "../writer";
 import { LnFormula } from "./ln";
 
@@ -17,12 +12,12 @@ export class PowFormula extends Formula {
     super();
   }
 
-  public buildDerivative(): Formula | null {
+  public buildDerivative(context: DerivativeContext): Formula | null {
     // u^v = u^v * (v ln(u))'
     const derivative = new MultiplyOperatorFormula(
       this.power,
       new LnFormula(this.inner),
-    ).buildDerivative();
+    ).buildDerivative(context);
     if (!derivative) return null;
     return new MultiplyOperatorFormula(this, derivative);
   }

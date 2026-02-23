@@ -1,5 +1,5 @@
 import type Decimal from "decimal.js";
-import { ExecutionContext, Formula } from "../formula";
+import { DerivativeContext, ExecutionContext, Formula } from "../formula";
 import type { FormulaWriter } from "../writer";
 import { DivideOperatorFormula, MultiplyOperatorFormula } from "./operators";
 
@@ -8,8 +8,8 @@ export class LnFormula extends Formula {
     super();
   }
 
-  public buildDerivative(): Formula | null {
-    const inner = this.inner.buildDerivative();
+  public buildDerivative(context: DerivativeContext): Formula | null {
+    const inner = this.inner.buildDerivative(context);
     if (!inner) return null;
     return new DivideOperatorFormula(inner, this.inner);
   }

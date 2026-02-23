@@ -1,6 +1,10 @@
 import Decimal from "decimal.js";
 import type { FormulaWriter } from "./writer";
 
+export class DerivativeContext {
+  constructor(public byVariable: string) {}
+}
+
 export class ExecutionContext {
   constructor(private variables: Record<string, Decimal>) {}
 
@@ -13,7 +17,7 @@ export class ExecutionContext {
 }
 
 export abstract class Formula {
-  public abstract buildDerivative(): Formula | null;
+  public abstract buildDerivative(context: DerivativeContext): Formula | null;
   public abstract execute(context: ExecutionContext): Decimal;
   public abstract write(writer: FormulaWriter): void;
   public abstract isPrimary(): boolean;
