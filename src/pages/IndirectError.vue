@@ -5,6 +5,7 @@
   import useIndirectError from '@/models/indirectError';
   import { Decimal } from 'decimal.js';
   import { computed, ref } from 'vue';
+import { AsciiFormulaWriter } from '@/shared/formulas/writers/ascii';
 
   const service = useIndirectError(); 
   
@@ -96,9 +97,42 @@
       </template>
     </Card>
 
-    <Card>
+    <Card v-if="service.result.value">
+      <template #title>
+        Результат
+      </template>
+
       <template #content>
-        <p>{{ JSON.stringify(service.result.value) }}</p>
+        <p><b>Производные:</b></p>
+        <p v-for="[varName, partial] of Object.entries(service.result.value.partials)">
+          df/f{{ varName }} = {{ partial?.toString(new AsciiFormulaWriter()) ?? 0 }}
+        </p>
+        <br />
+        <p><b>Значения по выборкам:</b></p>
+        <div v-for="(sample, sampleId) of service.result.value.samples">
+          <p>----- Выборка №{{ sampleId + 1 }}:</p>
+          <p>f = {{ sample.result }}</p>
+          <p>theta = sqrt(
+            <span v-for="(derivative, i) in sample.derivatives">
+              <span v-if="i != 0">+</span>
+              ({{ derivative }} * {{ service.result.value.errors[i] }}) ^ 2
+            </span>
+          ) = {{ sample.error }}</p>
+        </div>
+        <br />
+        <p><b>Итоговые значения:</b></p>
+        <p>f = (
+          <span v-for="(sample, sampleId) of service.result.value.samples">
+            <span v-if="sampleId != 0"> +</span>
+            {{ sample.result }}
+          </span>
+        ) / {{ service.result.value.samples.length }} = {{ service.result.value.average }} </p>
+        <p>theta = (
+          <span v-for="(sample, sampleId) of service.result.value.samples">
+            <span v-if="sampleId != 0"> +</span>
+            ({{ sample.error }}) ^ 2
+          </span>
+        ) / {{ service.result.value.samples.length }} = {{ service.result.value.error }} </p>
       </template>
     </Card>
   </CardList>

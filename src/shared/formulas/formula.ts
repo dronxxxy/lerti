@@ -22,6 +22,11 @@ export abstract class Formula {
   public abstract write(writer: FormulaWriter): void;
   public abstract isPrimary(): boolean;
 
+  public toString(writer: FormulaWriter): string {
+    this.write(writer);
+    return writer.get();
+  }
+
   protected abstract getChildren(): IterableIterator<Formula>;
 
   public *iterate(): IterableIterator<Formula> {

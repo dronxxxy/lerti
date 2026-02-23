@@ -1,4 +1,4 @@
-import { AlgorithmError, catchAlgorithmError, throwAlgorithmError } from "@/shared/error";
+import { AlgorithmError, throwAlgorithmError } from "@/shared/error";
 import { DerivativeContext, ExecutionContext, type Formula } from "@/shared/formulas/formula";
 import { VariableFormula } from "@/shared/formulas/impl/variable";
 import { parseFormulaFromLatex } from "@/shared/formulas/parse/latex";
@@ -72,6 +72,7 @@ export class VarTable {
 
 export type Result = {
   partials: Record<string, Formula | null>,
+  errors: Decimal[],
   samples: {
     derivatives: Decimal[],
     result: Decimal,
@@ -116,6 +117,7 @@ export default function useIndirectError() {
     const samples = [];
     for (let i = 0; i < table.getLength(); i++) {
       const context = table.buildContext(i);
+      console.log(context);
 
       const derivatives: Decimal[] = partials
         .map((partial) => partial ? partial.execute(context) : new Decimal(0));
@@ -137,6 +139,7 @@ export default function useIndirectError() {
 
     result.value = {
       partials: Object.fromEntries(table.variables.map((varInfo, i) => [varInfo.name, partials[i]!])),
+      errors: table.variables.map((varInfo) => varInfo.error),
       samples,
       error: samples
         .map((sample) => sample.error.pow(2))
