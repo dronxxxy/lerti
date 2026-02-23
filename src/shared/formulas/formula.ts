@@ -23,7 +23,7 @@ export abstract class Formula {
   public *iterate(): IterableIterator<Formula> {
     for (const formula of this.getChildren()) {
       yield formula;
-      for (const child of formula.getChildren()) yield child;
+      for (const child of formula.iterate()) yield child;
     }
   }
 }
