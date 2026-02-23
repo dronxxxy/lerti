@@ -1,5 +1,5 @@
 import { AlgorithmError, catchAlgorithmError, throwAlgorithmError } from "@/shared/error";
-import { ExecutionContext, type Formula } from "@/shared/formulas/formula";
+import { DerivativeContext, ExecutionContext, type Formula } from "@/shared/formulas/formula";
 import { VariableFormula } from "@/shared/formulas/impl/variable";
 import { parseFormulaFromLatex } from "@/shared/formulas/parse/latex";
 import Decimal from "decimal.js";
@@ -70,6 +70,17 @@ export class VarTable {
   }
 }
 
+export type Result = {
+  partials: Record<string, Formula | null>,
+  samples: {
+    derivatives: Decimal[],
+    result: Decimal,
+    error: Decimal,
+  }[], 
+  error: Decimal,
+  average: Decimal,
+};
+
 function detectVariableList(formula: Formula): Set<string> {
   let result = new Set<string>();
   for (const child of formula.iterate())
@@ -82,6 +93,7 @@ export default function useIndirectError() {
   const formula = ref("");
   const table = reactive<VarTable>(new VarTable());
   const error = ref<AlgorithmError | null>(null);
+  const result = ref<Result | null>(null);
 
   watch(formula, (formula) => {
     let parsed = throwAlgorithmError(
@@ -94,10 +106,55 @@ export default function useIndirectError() {
     table.applyNewVariables(vars);
   })
 
+  const process = () => {
+    if (error.value != null) return;
+
+    let parsed = parseFormulaFromLatex(formula.value);
+    const partials = table.variables
+      .map((varInfo) => parsed.buildDerivative(new DerivativeContext(varInfo.name)));
+
+    const samples = [];
+    for (let i = 0; i < table.getLength(); i++) {
+      const context = table.buildContext(i);
+
+      const derivatives: Decimal[] = partials
+        .map((partial) => partial ? partial.execute(context) : new Decimal(0));
+
+      const error = derivatives
+        .map((e, i) => e.mul(table.variables[i]!.error))
+        .map((e) => e.pow(2))
+        .reduce((acc, val) => acc.add(val))
+        .sqrt();
+
+      const result = parsed.execute(context);
+
+      samples.push({
+        derivatives,
+        result,
+        error,
+      })
+    }
+
+    result.value = {
+      partials: Object.fromEntries(table.variables.map((varInfo, i) => [varInfo.name, partials[i]!])),
+      samples,
+      error: samples
+        .map((sample) => sample.error.pow(2))
+        .reduce((acc, val) => acc.add(val))
+        .sqrt().div(new Decimal(samples.length)),
+      average: samples
+        .map((sample) => sample.result)
+        .reduce((acc, val) => acc.add(val))
+        .div(new Decimal(samples.length))
+    };
+  }
+
   return {
     formula,
     table,
     error,
+    result,
+    process
   }
 }
 
