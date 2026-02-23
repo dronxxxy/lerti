@@ -10,19 +10,19 @@ import { LnFormula } from "../impl/ln";
 import { UnaryMinusFormula } from "../impl/unary";
 
 export class InvalidLatexException extends AlgorithmError {
-  constructor (exception: string) {
-    super(`failed to parse latex expression: ${exception}`, 
+  constructor(exception: string) {
+    super(`failed to parse latex expression: ${exception}`,
       "Неверно введена формула",
-      "Не удалось распознать содержимое формулы. Проверьте ещё раз"
+      `Не удалось распознать содержимое формулы: ${exception}`
     )
   }
 }
 
 export class UnknownLatexFeature extends AlgorithmError {
-  constructor (kind: string, node: Node) {
-    super(`unsupported latex feature: ${kind}\n${JSON.stringify(node)}`, 
+  constructor(kind: string, description: string, node: Node) {
+    super(`unsupported latex feature: ${kind}\n${JSON.stringify(node)}`,
       "Неподдерживаемая функция",
-      `Вы используете фичу latex, которая не реализована (${kind})`
+      description
     )
   }
 }
@@ -38,9 +38,13 @@ function astNodeParseOperator(node: Node): Formula {
       '*': MultiplyOperatorFormula,
       '^': PowFormula,
       'cdot': MultiplyOperatorFormula,
-    }[node.name ?? ""]; 
-    if (Operator === undefined) 
-      throw new UnknownLatexFeature(`OperatorNode(prefix).name = ${node.name}`, node);
+    }[node.name ?? ""];
+    if (Operator === undefined)
+      throw new UnknownLatexFeature(
+        `OperatorNode(prefix).name = ${node.name}`,
+        `Неизвестный бинарный оператор "${node.name}"`,
+        node
+      );
     return new Operator(left, right);
   }
 
@@ -49,12 +53,20 @@ function astNodeParseOperator(node: Node): Formula {
     const Operator = {
       '-': UnaryMinusFormula,
     }[node.name ?? ""]
-    if (Operator === undefined) 
-      throw new UnknownLatexFeature(`OperatorNode(infix).name = ${node.name}`, node);
+    if (Operator === undefined)
+      throw new UnknownLatexFeature(
+        `OperatorNode(infix).name = ${node.name}`,
+        `Неизвестный унарный оператор "${node.name}"`,
+        node
+      );
     return new Operator(inner);
   }
 
-  throw new UnknownLatexFeature(`OperatorNode.operatorType = ${node.operatorType}`, node);
+  throw new UnknownLatexFeature(
+    `OperatorNode.operatorType = ${node.operatorType}`,
+    `Оператор "${node.name}" не реализован`,
+    node
+  );
 }
 
 function astNodeParseAutomult(node: Node): Formula {
@@ -79,12 +91,20 @@ function astNodeParseId(node: Node): Formula {
 
 function astNodeParseFunction(node: Node): Formula {
   if (node.args.length != 1)
-    throw new UnknownLatexFeature(`FunctionNode.args.length = ${node.args.length}`, node);
+    throw new UnknownLatexFeature(
+      `FunctionNode.args.length = ${node.args.length}`,
+      "Поддерживаются функции только с одним аргументом",
+      node
+    );
   const Function = {
     "ln": LnFormula,
   }[node.name!];
-  if (Function === undefined) 
-    throw new UnknownLatexFeature(`FunctionNode.name = ${node.name}`, node);
+  if (Function === undefined)
+    throw new UnknownLatexFeature(
+      `FunctionNode.name = ${node.name}`,
+      `Неизвестная функция "${node.name}"`,
+      node
+    );
   const arg = astNodeParse(node.args[0]);
   return new Function(arg);
 }
@@ -97,7 +117,11 @@ function astNodeParse(node: Node): Formula {
     case 'id': return astNodeParseId(node);
     case 'function': return astNodeParseFunction(node);
     case 'frac': return astNodeParseFrac(node);
-    default: throw new UnknownLatexFeature(`Node.type = ${node.type}`, node);
+    default: throw new UnknownLatexFeature(
+      `Node.type = ${node.type}`,
+      `Неизвестная конструкция "${node.type}"`,
+      node
+    );
   }
 }
 
@@ -108,7 +132,6 @@ export function parseFormulaFromLatex(latex: string): Formula {
       autoMult: true,
       keepParentheses: false,
       functions: [],
-      builtinFunctions: ["ln"],
       extra: {
         memberExpressions: false,
         sets: false,
@@ -119,7 +142,7 @@ export function parseFormulaFromLatex(latex: string): Formula {
       }
     });
   } catch (e) {
-    throw new InvalidLatexException(String(e));
+    throw new InvalidLatexException(e instanceof Error ? e.message : String(e));
   }
   return astNodeParse(node);
 }

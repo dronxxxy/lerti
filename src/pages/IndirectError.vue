@@ -25,7 +25,7 @@ import ProcessingInputText from '@/components/ProcessingInputText.vue';
     if (!result) return null;
     return {
       derivatives: Object.entries(result.partials)
-        .map(([varName, partial]) => `(df)/(d${varName}) = ${ partial?.toString(new AsciiFormulaWriter()) ?? 0 }`),
+        .map(([varName, partial]) => `(df)/(d ${varName}) = ${ partial?.toString(new AsciiFormulaWriter()) ?? 0 }`),
       samples: result.samples.map((sample) => ({
         result: `f = ${sample.result.toFixed(2)}`,
         error: `theta = sqrt(${
@@ -55,12 +55,14 @@ import ProcessingInputText from '@/components/ProcessingInputText.vue';
       </template>
       <template #content>
         <div class="flex flex-col items-center gap-4 text-center">
-          <FormulaInput
-            v-model="service.formula.value"
-            class="w-[50%]"
-          />
-          <div v-if="service.error" class="text-red-500 text-sm">
-            {{ service.error.value }}
+          <div class="w-[100%]">
+            <FormulaInput
+              v-model="service.formula.value"
+              class="w-[50%]"
+            />
+            <div v-if="service.error" class="text-red-500 text-sm pt-[5px]">
+              {{ service.error.value?.description }}
+            </div>
           </div>
 
           <div class="flex items-center gap-2 w-[80%]">
@@ -80,9 +82,9 @@ import ProcessingInputText from '@/components/ProcessingInputText.vue';
             scrollable
             scrollDirection="horizontal"
           >
-            <Column field="name" header="Переменная">
+            <Column field="name" header="Переменная" class="w-[100px]">
               <template #body="{ data }">
-                {{ data.name }} 
+                <FormulaView :value="data.name" />
               </template>
             </Column>
 
@@ -155,7 +157,7 @@ import ProcessingInputText from '@/components/ProcessingInputText.vue';
           </AccordionPanel>
         </Accordion>
         <div class="p-3 text-center">
-          <p class="text-2xl mt-3">Значение x &approx; <b>{{ result.resultValue }} &plusmn; {{ result.errorValue }}</b></p>
+          <p class="text-2xl mt-3">Значение f &approx; <b>{{ result.resultValue }} &plusmn; {{ result.errorValue }}</b></p>
         </div>
       </template>
     </Card>
