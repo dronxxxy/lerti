@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { parseFormulaFromLatex } from "./latex";
+import { parseFormulaFromLatex } from "../parse/latex";
 import { AsciiFormulaWriter } from "../writers/ascii";
 
 function testParsing(source: string, target: string) {
@@ -13,5 +13,5 @@ function testParsing(source: string, target: string) {
 
 testParsing(
   "2 \\cdot x - 3y / 8 + 3 * 5",
-  "(((2)*(x))-(((3)*(y))/(8)))+((3)*(5))"
+  "((2*x)-((3*y)/8))+(3*5)"
 )

@@ -20,13 +20,13 @@ abstract class OperatorFormula extends Formula {
   protected abstract writeOperator(writer: FormulaWriter): void;
 
   public write(writer: FormulaWriter): void {
-    writer.beginScope();
-    this.left.write(writer);
-    writer.endScope();
+    writer.scopeIf(() => this.left.write(writer), !this.left.isPrimary());
     this.writeOperator(writer);
-    writer.beginScope();
-    this.right.write(writer);
-    writer.endScope();
+    writer.scopeIf(() => this.right.write(writer), !this.right.isPrimary());
+  }
+
+  public isPrimary(): boolean {
+    return false;
   }
 }
 

@@ -37,14 +37,12 @@ export class PowFormula extends Formula {
   }
 
   public write(writer: FormulaWriter): void {
-    writer.beginScope();
-    this.inner.write(writer);
-    writer.endScope();
-
+    writer.scopeIf(() => this.inner.write(writer), !this.inner.isPrimary());
     writer.writePow();
+    writer.scopeIf(() => this.power.write(writer), !this.power.isPrimary());
+  }
 
-    writer.beginScope();
-    this.power.write(writer);
-    writer.endScope();
+  public isPrimary(): boolean {
+    return false;
   }
 }

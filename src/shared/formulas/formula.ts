@@ -16,6 +16,7 @@ export abstract class Formula {
   public abstract buildDerivative(): Formula | null;
   public abstract execute(context: ExecutionContext): Decimal;
   public abstract write(writer: FormulaWriter): void;
+  public abstract isPrimary(): boolean;
 
   protected abstract getChildren(): IterableIterator<Formula>;
 

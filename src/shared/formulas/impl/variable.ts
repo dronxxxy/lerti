@@ -21,4 +21,8 @@ export class VariableFormula extends Formula {
   }
 
   protected *getChildren(): IterableIterator<Formula> {}
+
+  public isPrimary(): boolean {
+    return true;
+  }
 }

@@ -28,4 +28,8 @@ export class LnFormula extends Formula {
   protected *getChildren(): IterableIterator<Formula> {
     yield this.inner;
   }
+
+  public isPrimary(): boolean {
+    return true;
+  }
 }

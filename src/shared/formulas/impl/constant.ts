@@ -20,4 +20,8 @@ export class ConstantNumberFormula extends Formula {
   }
 
   protected *getChildren(): IterableIterator<Formula> {}
+
+  public isPrimary(): boolean {
+    return true;
+  }
 }

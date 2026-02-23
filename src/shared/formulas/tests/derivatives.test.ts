@@ -17,7 +17,7 @@ function testDerivative(formula: Formula, output: string) {
 test("x + y", () =>
   testDerivative(
     new AddOperatorFormula(new VariableFormula("x"), new VariableFormula("y")),
-    "(1)+(1)",
+    "1+1",
   ));
 
 test("ln(x * (2 * z)) * (1 + 2 + y)", () =>
@@ -40,5 +40,5 @@ test("ln(x * (2 * z)) * (1 + 2 + y)", () =>
         new VariableFormula("y"),
       ),
     ),
-    "(((((1)*((2)*(z)))+(((1)*(2))*(x)))/((x)*((2)*(z))))*(((1)+(2))+(y)))+((1)*(ln((x)*((2)*(z)))))",
+    "((((1*(2*z))+((1*2)*x))/(x*(2*z)))*((1+2)+y))+(1*ln(x*(2*z)))",
   ));
