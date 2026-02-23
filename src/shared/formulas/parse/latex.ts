@@ -7,6 +7,7 @@ import Decimal from "decimal.js";
 import { VariableFormula } from "../impl/variable";
 import { PowFormula } from "../impl/pow";
 import { LnFormula } from "../impl/ln";
+import { AsciiFormulaWriter } from "../writers/ascii";
 
 export class InvalidLatexException extends AlgorithmError {
   constructor (exception: string) {
@@ -52,6 +53,12 @@ function astNodeParseAutomult(node: Node): Formula {
   return new MultiplyOperatorFormula(left, right);
 }
 
+function astNodeParseFrac(node: Node): Formula {
+  const left = astNodeParse(node.args[0]);
+  const right = astNodeParse(node.args[1]);
+  return new DivideOperatorFormula(left, right);
+}
+
 function astNodeParseNumber(node: Node): Formula {
   return new ConstantNumberFormula(new Decimal(node.value!));
 }
@@ -78,6 +85,7 @@ function astNodeParse(node: Node): Formula {
     case 'number': return astNodeParseNumber(node);
     case 'id': return astNodeParseId(node);
     case 'function': return astNodeParseFunction(node);
+    case 'frac': return astNodeParseFrac(node);
     default: throw new UnknownLatexFeature(`Node.type = ${node.type}`, node);
   }
 }
