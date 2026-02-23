@@ -1,7 +1,7 @@
 import Decimal from "decimal.js";
 import type { FormulaWriter } from "./writer";
 
-export abstract class ExecutionContext {
+export class ExecutionContext {
   constructor(private variables: Record<string, Decimal>) {}
 
   public getVariable(name: string) {

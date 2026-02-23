@@ -31,3 +31,16 @@ export function catchAlgorithmError(process: () => void): AlgorithmError | null 
   }
   return null;
 }
+
+export function throwAlgorithmError<T>(
+  process: () => T,
+  onError: (error: AlgorithmError) => void = (e) => { throw e; }
+): T | undefined {
+  try {
+    return process();
+  } catch (e) {
+    if (e instanceof AlgorithmError) onError(e);
+    else onError(new UnknownError(e));
+  }
+  return undefined;
+}
