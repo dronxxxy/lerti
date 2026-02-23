@@ -1,5 +1,5 @@
 import Decimal from "decimal.js";
-import { AlgorithmError } from "./error";
+import { AlgorithmError } from "../error";
 
 export type TTable = Record<number, Decimal>
 
