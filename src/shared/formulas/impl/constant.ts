@@ -1,5 +1,5 @@
 import type Decimal from "decimal.js";
-import { DerivativeContext, ExecutionContext, Formula } from "../formula";
+import { DerivativeContext, ExecutionContext, Formula, FormulaLevel } from "../formula";
 import type { FormulaWriter } from "../writer";
 
 export class ConstantNumberFormula extends Formula {
@@ -21,7 +21,7 @@ export class ConstantNumberFormula extends Formula {
 
   protected *getChildren(): IterableIterator<Formula> {}
 
-  public isPrimary(): boolean {
-    return true;
+  public getLevel(): FormulaLevel {
+    return FormulaLevel.VALUE;
   }
 }

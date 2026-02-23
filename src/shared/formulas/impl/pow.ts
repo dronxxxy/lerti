@@ -1,5 +1,5 @@
 import Decimal from "decimal.js";
-import { DerivativeContext, ExecutionContext, Formula } from "../formula";
+import { DerivativeContext, ExecutionContext, Formula, FormulaLevel } from "../formula";
 import { MultiplyOperatorFormula } from "./operators";
 import type { FormulaWriter } from "../writer";
 import { LnFormula } from "./ln";
@@ -32,12 +32,13 @@ export class PowFormula extends Formula {
   }
 
   public write(writer: FormulaWriter): void {
-    writer.scopeIf(() => this.inner.write(writer), !this.inner.isPrimary());
+    const level = this.getLevel();
+    this.inner.writePrioritized(writer, level, true);
     writer.writePow();
-    writer.scopeIf(() => this.power.write(writer), !this.power.isPrimary());
+    this.power.writePrioritized(writer, level);
   }
 
-  public isPrimary(): boolean {
-    return false;
+  public getLevel(): FormulaLevel {
+    return FormulaLevel.POW;
   }
 }

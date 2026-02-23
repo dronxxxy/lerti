@@ -16,11 +16,28 @@ export class ExecutionContext {
   }
 }
 
+export enum FormulaLevel {
+  BINOP_ADD = 0,
+  BINOP_MUL,
+  UNARY,
+  POW,
+  VALUE,
+}
+
 export abstract class Formula {
   public abstract buildDerivative(context: DerivativeContext): Formula | null;
   public abstract execute(context: ExecutionContext): Decimal;
   public abstract write(writer: FormulaWriter): void;
-  public abstract isPrimary(): boolean;
+  public abstract getLevel(): FormulaLevel;
+
+  public writePrioritized(writer: FormulaWriter, outerLevel: FormulaLevel, equals: boolean = false): string {
+    const level = this.getLevel();
+    const shouldBeScoped = outerLevel > level || (equals && outerLevel == level);
+    if (shouldBeScoped) writer.beginScope(); 
+    this.write(writer);
+    if (shouldBeScoped) writer.endScope(); 
+    return writer.get();
+  }
 
   public toString(writer: FormulaWriter): string {
     this.write(writer);

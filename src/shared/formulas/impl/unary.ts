@@ -1,5 +1,5 @@
 import type Decimal from "decimal.js";
-import { DerivativeContext, ExecutionContext, Formula } from "../formula";
+import { DerivativeContext, ExecutionContext, Formula, FormulaLevel } from "../formula";
 import type { FormulaWriter } from "../writer";
 
 export class UnaryMinusFormula extends Formula {
@@ -19,11 +19,11 @@ export class UnaryMinusFormula extends Formula {
 
   public write(writer: FormulaWriter): void {
     writer.writeMinus();
-    writer.scopeIf(() => this.inner.write(writer), !this.inner.isPrimary());
+    this.inner.writePrioritized(writer, this.getLevel());
   }
 
-  public isPrimary(): boolean {
-    return false;
+  public getLevel(): FormulaLevel {
+    return FormulaLevel.UNARY;
   }
 
   protected *getChildren(): IterableIterator<Formula> {

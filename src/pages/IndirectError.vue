@@ -6,6 +6,7 @@
   import { Decimal } from 'decimal.js';
   import { computed, ref } from 'vue';
 import { AsciiFormulaWriter } from '@/shared/formulas/writers/ascii';
+import FormulaView from '@/components/FormulaView.vue';
 
   const service = useIndirectError(); 
   
@@ -105,7 +106,7 @@ import { AsciiFormulaWriter } from '@/shared/formulas/writers/ascii';
       <template #content>
         <p><b>Производные:</b></p>
         <p v-for="[varName, partial] of Object.entries(service.result.value.partials)">
-          df/f{{ varName }} = {{ partial?.toString(new AsciiFormulaWriter()) ?? 0 }}
+          <FormulaView> (df)/(d{{ varName }}) = {{ partial?.toString(new AsciiFormulaWriter()) ?? 0 }}</FormulaView>
         </p>
         <br />
         <p><b>Значения по выборкам:</b></p>

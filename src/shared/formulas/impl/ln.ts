@@ -1,5 +1,5 @@
 import type Decimal from "decimal.js";
-import { DerivativeContext, ExecutionContext, Formula } from "../formula";
+import { DerivativeContext, ExecutionContext, Formula, FormulaLevel } from "../formula";
 import type { FormulaWriter } from "../writer";
 import { DivideOperatorFormula, MultiplyOperatorFormula } from "./operators";
 
@@ -29,7 +29,7 @@ export class LnFormula extends Formula {
     yield this.inner;
   }
 
-  public isPrimary(): boolean {
-    return true;
+  public getLevel(): FormulaLevel {
+    return FormulaLevel.VALUE;
   }
 }

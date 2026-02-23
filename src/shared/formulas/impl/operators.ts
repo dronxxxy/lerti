@@ -1,5 +1,5 @@
 import Decimal from "decimal.js";
-import { DerivativeContext, ExecutionContext, Formula } from "../formula";
+import { DerivativeContext, ExecutionContext, Formula, FormulaLevel } from "../formula";
 import { PowFormula } from "./pow";
 import { FormulaWriter } from "../writer";
 import { ConstantNumberFormula } from "./constant";
@@ -21,13 +21,10 @@ abstract class OperatorFormula extends Formula {
   protected abstract writeOperator(writer: FormulaWriter): void;
 
   public write(writer: FormulaWriter): void {
-    writer.scopeIf(() => this.left.write(writer), !this.left.isPrimary());
+    const level = this.getLevel();
+    this.left.writePrioritized(writer, level);
     this.writeOperator(writer);
-    writer.scopeIf(() => this.right.write(writer), !this.right.isPrimary());
-  }
-
-  public isPrimary(): boolean {
-    return false;
+    this.right.writePrioritized(writer, level);
   }
 }
 
@@ -49,6 +46,10 @@ export class AddOperatorFormula extends OperatorFormula {
   protected writeOperator(writer: FormulaWriter): void {
     writer.writePlus();
   }
+
+  public getLevel(): FormulaLevel {
+    return FormulaLevel.BINOP_ADD;
+  }
 }
 
 export class SubtractOperatorFormula extends OperatorFormula {
@@ -68,6 +69,10 @@ export class SubtractOperatorFormula extends OperatorFormula {
 
   protected writeOperator(writer: FormulaWriter): void {
     writer.writeMinus();
+  }
+
+  public getLevel(): FormulaLevel {
+    return FormulaLevel.BINOP_ADD;
   }
 }
 
@@ -99,6 +104,10 @@ export class MultiplyOperatorFormula extends OperatorFormula {
 
   protected writeOperator(writer: FormulaWriter): void {
     writer.writeMultiply();
+  }
+
+  public getLevel(): FormulaLevel {
+    return FormulaLevel.BINOP_MUL;
   }
 }
 
@@ -134,5 +143,9 @@ export class DivideOperatorFormula extends OperatorFormula {
 
   protected writeOperator(writer: FormulaWriter): void {
     writer.writeDivide();
+  }
+
+  public getLevel(): FormulaLevel {
+    return FormulaLevel.BINOP_MUL;
   }
 }
