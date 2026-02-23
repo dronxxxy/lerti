@@ -3,20 +3,26 @@ export type approx = {
 }
 
 export default function useMinSquareMethod() {
-    const xvalues = ref<number[]>([0, 0, 0, 0, 0]);
+    const xValues = ref<number[]>([0, 0, 0, 0, 0]);
     const xadditionalUs = ref<Record<number, number>>({});
     const xadditionalTs = ref<Record<number, number>>({});
 
-    const yvalues = ref<number[]>([0, 0, 0, 0, 0]);
+    const yValues = ref<number[]>([0, 0, 0, 0, 0]);
     const yadditionalUs = ref<Record<number, number>>({});
     const yadditionalTs = ref<Record<number, number>>({});
+    const result = ref<{a: number, b: number, rSquared: number} | null>(null)
+
+    const approximate = () => {
+    }
 
     return{
-        xvalues,
+        xValues,
         xadditionalUs,
         xadditionalTs,
-        yvalues,
+        yValues,
         yadditionalUs,
-        yadditionalTs
+        yadditionalTs,
+        result,
+        approximate
     }
 }

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-  import Sample from '@/components/Sample.vue';
+  import TableForApprox from '@/components/TableForApprox.vue';
   import { Card } from 'primevue'
   import useMinSquareMethod from '@/models/approxMinSquare';
-  import { computed } from 'vue'
+  import { computed, watch } from 'vue'
   import { Line } from 'vue-chartjs'
   import { Chart as ChartJS, Title, Tooltip, Legend, LineElement, CategoryScale, LinearScale, PointElement } from 'chart.js'
 
@@ -10,26 +10,101 @@
 
   const service = useMinSquareMethod()
 
-  const chartData = computed(() => ({
-    labels: (service.xvalues.value || []).map((_, i) => `X${i}`),
-    datasets: [
-      {
-        label: 'Значения',
-        data: service.xvalues.value || [],
-        borderColor: 'rgb(75, 192, 192)',
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-        tension: 0.1
-      }
-    ]
-  }))
+  const chartData = computed(() => {
+    const xVals = service.xValues.value || []
+    const yVals = service.yValues.value || []
+    
+    const minLength = Math.min(xVals.length, yVals.length)
+    
+    return {
+      labels: xVals.slice(0, minLength).map((val) => val.toFixed(2)),
+      datasets: [
+        {
+          label: 'Экспериментальные точки',
+          data: yVals.slice(0, minLength),
+          borderColor: 'rgb(75, 192, 192)',
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          tension: 0.1,
+          pointRadius: 5,
+          pointHoverRadius: 8
+        }
+      ]
+    }
+  })
 
-  const chartOptions = {
+  const chartOptions = computed(() => ({
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { display: false }
+      legend: { 
+        display: true,
+        position: 'top' as const
+      },
+      tooltip: {
+        callbacks: {
+          label: (context: any) => {
+            return `Y: ${context.raw.toFixed(4)}`
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'X значения'
+        },
+        grid: {
+          display: true
+        }
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'Y значения'
+        },
+        grid: {
+          display: true
+        }
+      }
     }
-  }
+  }))
+
+  const hasData = computed(() => {
+    const xVals = service.xValues.value || []
+    const yVals = service.yValues.value || []
+    return xVals.length > 0 && yVals.length > 0 && Math.min(xVals.length, yVals.length) > 0
+  })
+
+
+  const pairsCount = computed(() => {
+    const xVals = service.xValues.value || []
+    const yVals = service.yValues.value || []
+    return Math.min(xVals.length, yVals.length)
+  })
+
+
+  const xValues = computed({
+    get: () => service.xValues.value || [],
+    set: (value) => { 
+      service.xValues.value = value
+      //МНК
+      service.approximate()
+    }
+  })
+
+  const yValues = computed({
+    get: () => service.yValues.value || [],
+    set: (value) => { 
+      service.yValues.value = value
+      // МНК
+      service.approximate()
+    }
+  })
+
+  watch([() => service.xValues.value, () => service.yValues.value], () => {
+    service.approximate()
+  }, { deep: true })
 </script>
 
 <template>
@@ -38,23 +113,69 @@
       <Card>
         <template #title>
           <div class="flex flex-row justify-between">
-            Выборка
+            <span>Ввод данных</span>
+            <span class="text-sm text-gray-500">
+              Пар точек: {{ pairsCount }}
+            </span>
           </div>
         </template>
         <template #content>
-          <div class="flex flex-col gap-5 items-stretch pt-2">
-            <Sample v-model="service.xvalues.value"/>
-          </div>
-          <div class="flex flex-col gap-5 items-stretch pt-2">
-            <Sample type="y" v-model="service.yvalues.value"/>
-          </div>
-          </template>
+          <TableForApprox 
+            type="both" 
+            v-model:x="xValues" 
+            v-model:y="yValues" 
+          />
+        </template>
       </Card>
 
-      <Card v-if="service.xvalues.value?.length">
+      <Card v-if="hasData">
+        <template #title>
+          <div class="flex flex-row justify-between">
+            <span>График зависимости Y = f(X)</span>
+          </div>
+        </template>
         <template #content>
-          <div style="height: 300px;">
+          <div style="height: 400px; width: 100%;">
             <Line :data="chartData" :options="chartOptions" />
+          </div>
+        </template>
+      </Card>
+
+      <Card v-if="service.result.value">
+        <template #title>
+          <span>Результаты аппроксимации</span>
+        </template>
+        <template #content>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="p-3 bg-blue-50 rounded">
+              <div class="text-sm text-gray-600">Коэффициенты</div>
+              <div class="font-mono text-lg">
+                a = {{ service.result.value.a?.toFixed(4) }}<br>
+                b = {{ service.result.value.b?.toFixed(4) }}
+              </div>
+            </div>
+            <div class="p-3 bg-green-50 rounded">
+              <div class="text-sm text-gray-600">Качество аппроксимации</div>
+              <div class="font-mono text-lg">
+                R2 = {{ service.result.value.rSquared?.toFixed(4) }}
+              </div>
+            </div>
+          </div>
+          
+          <div class="mt-3 p-3 bg-gray-50 rounded">
+            <div class="text-sm text-gray-600">Уравнение</div>
+            <div class="font-mono text-lg">
+              y = {{ service.result.value.a?.toFixed(4) }}x + {{ service.result.value.b?.toFixed(4) }}
+            </div>
+          </div>
+        </template>
+      </Card>
+      
+      <Card v-else-if="service.xValues.value?.length > 0 || service.yValues.value?.length > 0">
+        <template #content>
+          <div class="text-center text-gray-500 p-4">
+            Недостаточно данных для аппроксимации. 
+            Требуется минимум 2 пары точек. (Сейчас {{ pairsCount }} пар)
           </div>
         </template>
       </Card>
