@@ -81,7 +81,7 @@ export class MultiplyOperatorFormula extends OperatorFormula {
     }
 
     if (!right) {
-      return new MultiplyOperatorFormula(left, this.left);
+      return new MultiplyOperatorFormula(left, this.right);
     }
 
     return new AddOperatorFormula(
