@@ -18,9 +18,9 @@ export class ExecutionContext {
 
 export enum FormulaLevel {
   BINOP_ADD = 0,
+  POW,
   BINOP_MUL,
   UNARY,
-  POW,
   VALUE,
 }
 
