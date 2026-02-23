@@ -3,6 +3,7 @@ import { DerivativeContext, ExecutionContext, Formula } from "../formula";
 import { PowFormula } from "./pow";
 import { FormulaWriter } from "../writer";
 import { ConstantNumberFormula } from "./constant";
+import { UnaryMinusFormula } from "./unary";
 
 abstract class OperatorFormula extends Formula {
   constructor(
@@ -42,7 +43,7 @@ export class AddOperatorFormula extends OperatorFormula {
   public execute(context: ExecutionContext): Decimal {
     const left = this.left.execute(context);
     const right = this.right.execute(context);
-    throw left.plus(right);
+    return left.plus(right);
   }
 
   protected writeOperator(writer: FormulaWriter): void {
@@ -62,7 +63,7 @@ export class SubtractOperatorFormula extends OperatorFormula {
   public execute(context: ExecutionContext): Decimal {
     const left = this.left.execute(context);
     const right = this.right.execute(context);
-    throw left.minus(right);
+    return left.minus(right);
   }
 
   protected writeOperator(writer: FormulaWriter): void {
@@ -93,7 +94,7 @@ export class MultiplyOperatorFormula extends OperatorFormula {
   public execute(context: ExecutionContext): Decimal {
     const left = this.left.execute(context);
     const right = this.right.execute(context);
-    throw left.mul(right);
+    return left.mul(right);
   }
 
   protected writeOperator(writer: FormulaWriter): void {
@@ -109,7 +110,7 @@ export class DivideOperatorFormula extends OperatorFormula {
     if (!left) {
       if (!right) return this;
       return new DivideOperatorFormula(
-        new MultiplyOperatorFormula(right, this.left),
+        new UnaryMinusFormula(new MultiplyOperatorFormula(right, this.left)),
         new PowFormula(this.right, new ConstantNumberFormula(new Decimal(2))),
       );
     }
@@ -128,7 +129,7 @@ export class DivideOperatorFormula extends OperatorFormula {
   public execute(context: ExecutionContext): Decimal {
     const left = this.left.execute(context);
     const right = this.right.execute(context);
-    throw left.mul(right);
+    return left.div(right);
   }
 
   protected writeOperator(writer: FormulaWriter): void {
