@@ -30,6 +30,25 @@ import FormulaView from '@/components/FormulaView.vue';
     if (isNaN(val)) val = 0;
     service.table.variables[varIndex]!.error = new Decimal(val);
   };
+
+  const result = computed(() => {
+    const result = service.result.value;
+    if (!result) return null;
+    return {
+      derivatives: Object.entries(result.partials)
+        .map(([varName, partial]) => `(df)/(d${varName}) = ${ partial?.toString(new AsciiFormulaWriter()) ?? 0 }`),
+      samples: result.samples.map((sample) => ({
+        result: `f = ${sample.result}`,
+        error: `theta = sqrt(${
+              sample.derivatives
+                .map((derivative, i) => `(${derivative.toFixed(2)} * ${result.errors[i]!.toFixed(2)}) ^ 2`)
+                .join(' + ')
+            }) = ${sample.error.toFixed(2)}`
+      })),
+      result: `f = (${result.samples.map((sample) => sample.result.toFixed(2)).join('+')})/${result.samples.length} = ${result.average.toFixed(2)}`, 
+      error: `theta = sqrt(${result.samples.map((sample) => `${sample.error.toFixed(2)} ^ 2`).join('+')})/${result.samples.length} = ${result.error.toFixed(2)}`
+    };
+  })
 </script>
 
 <template>
@@ -98,42 +117,25 @@ import FormulaView from '@/components/FormulaView.vue';
       </template>
     </Card>
 
-    <Card v-if="service.result.value">
+    <Card v-if="result">
       <template #title>
         Результат
       </template>
 
       <template #content>
         <p><b>Производные:</b></p>
-        <p v-for="[varName, partial] of Object.entries(service.result.value.partials)">
-          <FormulaView> (df)/(d{{ varName }}) = {{ partial?.toString(new AsciiFormulaWriter()) ?? 0 }}</FormulaView>
-        </p>
-        <br />
+        <FormulaView v-for="derivative of result.derivatives" :value="derivative" />
+
         <p><b>Значения по выборкам:</b></p>
-        <div v-for="(sample, sampleId) of service.result.value.samples">
+        <div v-for="(sample, sampleId) of result.samples">
           <p>----- Выборка №{{ sampleId + 1 }}:</p>
-          <p>f = {{ sample.result }}</p>
-          <p>theta = sqrt(
-            <span v-for="(derivative, i) in sample.derivatives">
-              <span v-if="i != 0">+</span>
-              ({{ derivative }} * {{ service.result.value.errors[i] }}) ^ 2
-            </span>
-          ) = {{ sample.error }}</p>
+          <FormulaView :value="sample.result" />
+          <FormulaView :value="sample.error" />
         </div>
-        <br />
+
         <p><b>Итоговые значения:</b></p>
-        <p>f = (
-          <span v-for="(sample, sampleId) of service.result.value.samples">
-            <span v-if="sampleId != 0"> +</span>
-            {{ sample.result }}
-          </span>
-        ) / {{ service.result.value.samples.length }} = {{ service.result.value.average }} </p>
-        <p>theta = (
-          <span v-for="(sample, sampleId) of service.result.value.samples">
-            <span v-if="sampleId != 0"> +</span>
-            ({{ sample.error }}) ^ 2
-          </span>
-        ) / {{ service.result.value.samples.length }} = {{ service.result.value.error }} </p>
+        <FormulaView :value="result.result" />
+        <FormulaView :value="result.error" />
       </template>
     </Card>
   </CardList>

@@ -117,7 +117,6 @@ export default function useIndirectError() {
     const samples = [];
     for (let i = 0; i < table.getLength(); i++) {
       const context = table.buildContext(i);
-      console.log(context);
 
       const derivatives: Decimal[] = partials
         .map((partial) => partial ? partial.execute(context) : new Decimal(0));
