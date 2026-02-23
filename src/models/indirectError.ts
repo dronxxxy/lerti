@@ -1,4 +1,4 @@
-import { parseFormulaFromLatex } from "@/shared/formulas/parse/latex";
+import { InvalidLatexException, parseFormulaFromLatex } from "@/shared/formulas/parse/latex";
 import { AsciiFormulaWriter } from "@/shared/formulas/writers/ascii";
 import type Decimal from "decimal.js";
 import { ref, watch } from "vue";
@@ -19,7 +19,16 @@ export default function useIndirectError() {
   }
 
   watch(formula, (formula) => {
-    const parsed = parseFormulaFromLatex(formula);
+    let parsed;
+    try {
+      parsed = parseFormulaFromLatex(formula);
+    } catch (exception) {
+      if (exception instanceof InvalidLatexException) {
+      } else {
+        console.error(exception)
+      }
+      return;
+    }
     const derivative = parsed.buildDerivative();
     const writer = new AsciiFormulaWriter();
     derivative?.write(writer);
