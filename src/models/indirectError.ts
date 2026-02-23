@@ -1,3 +1,4 @@
+import { VariableFormula } from "@/shared/formulas/impl/variable";
 import { InvalidLatexException, parseFormulaFromLatex } from "@/shared/formulas/parse/latex";
 import { AsciiFormulaWriter } from "@/shared/formulas/writers/ascii";
 import type Decimal from "decimal.js";
@@ -29,10 +30,12 @@ export default function useIndirectError() {
       }
       return;
     }
-    const derivative = parsed.buildDerivative();
-    const writer = new AsciiFormulaWriter();
-    derivative?.write(writer);
-    console.log(writer.get())
+    console.log("detecting variables...")
+    for (const formula of parsed.iterate()) {
+      if (formula instanceof VariableFormula) {
+        console.log(formula.getVariableName())
+      }
+    }
   })
 
   return {

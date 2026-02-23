@@ -8,6 +8,10 @@ export class VariableFormula extends Formula {
     super();
   }
 
+  public getVariableName(): string {
+    return this.name;
+  }
+
   public execute(context: ExecutionContext): Decimal {
     return context.getVariable(this.name);
   }
