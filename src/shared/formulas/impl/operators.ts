@@ -117,7 +117,7 @@ export class DivideOperatorFormula extends OperatorFormula {
     const right = this.right.buildDerivative(context);
 
     if (!left) {
-      if (!right) return this;
+      if (!right) return null;
       return new DivideOperatorFormula(
         new UnaryMinusFormula(new MultiplyOperatorFormula(right, this.left)),
         new PowFormula(this.right, new ConstantNumberFormula(new Decimal(2))),
