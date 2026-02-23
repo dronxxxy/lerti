@@ -11,11 +11,11 @@
   const service = useMinSquareMethod()
 
   const chartData = computed(() => ({
-    labels: (service.values.value || []).map((_, i) => `X${i}`),
+    labels: (service.xvalues.value || []).map((_, i) => `X${i}`),
     datasets: [
       {
         label: 'Значения',
-        data: service.values.value || [],
+        data: service.xvalues.value || [],
         borderColor: 'rgb(75, 192, 192)',
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
         tension: 0.1
@@ -43,12 +43,15 @@
         </template>
         <template #content>
           <div class="flex flex-col gap-5 items-stretch pt-2">
-            <Sample v-model="service.values.value"/>
+            <Sample v-model="service.xvalues.value"/>
           </div>
-        </template>
+          <div class="flex flex-col gap-5 items-stretch pt-2">
+            <Sample type="y" v-model="service.yvalues.value"/>
+          </div>
+          </template>
       </Card>
 
-      <Card v-if="service.values.value?.length">
+      <Card v-if="service.xvalues.value?.length">
         <template #content>
           <div style="height: 300px;">
             <Line :data="chartData" :options="chartOptions" />

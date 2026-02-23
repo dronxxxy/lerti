@@ -1,7 +1,12 @@
+<!-- Sample.vue -->
 <script setup lang="ts">
   import { MAX_FRACTION_DIGITS } from '@/shared/constants';
   import { Button, InputNumber, InputGroup, InputGroupAddon, IftaLabel  } from 'primevue';
   import { computed, onMounted, ref } from 'vue';
+
+  const props = defineProps<{
+    type?: string
+  }>()
 
   const model = defineModel<number[]>({
     default: [0, 0, 0, 0, 0]
@@ -28,6 +33,9 @@
     const count = lastColumnsCount.value == rowSize ?  rowSize : rowSize - lastColumnsCount.value;
     model.value = [...model.value, ...(new Array(count).fill(0))]
   }
+
+  // Вычисляем символ для подписи (по умолчанию 'x')
+  const labelSymbol = computed(() => props.type || 'x')
 </script>
 
 <template>
@@ -46,7 +54,7 @@
             placeholder="0"
             :max-fraction-digits="MAX_FRACTION_DIGITS"
           />
-          <label>Элемент x<sub>{{(rowId - 1) * rowSize + (columnId - 1)}}</sub></label>
+          <label>Элемент {{ labelSymbol }}<sub>{{(rowId - 1) * rowSize + (columnId - 1)}}</sub></label>
         </IftaLabel>
         <InputGroupAddon v-else class="sample-cell"> &ndash; </InputGroupAddon>
       </template>
