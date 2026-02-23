@@ -21,9 +21,10 @@ export abstract class Formula {
   protected abstract getChildren(): IterableIterator<Formula>;
 
   public *iterate(): IterableIterator<Formula> {
+    yield this;
     for (const formula of this.getChildren()) {
-      yield formula;
-      for (const child of formula.iterate()) yield child;
+      for (const child of formula.iterate())
+        yield child;
     }
   }
 }
