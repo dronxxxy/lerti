@@ -1,12 +1,13 @@
 <script setup lang="ts">
   import CardList from '@/components/CardList.vue';
-  import { Card, DataTable, Column, InputText, Button } from 'primevue';
+  import { Card, DataTable, Column, InputText, Button, AccordionPanel, AccordionHeader, Accordion, AccordionContent } from 'primevue';
   import FormulaInput from '@/components/FormulaInput.vue';
   import useIndirectError from '@/models/indirectError';
-  import { Decimal } from 'decimal.js';
   import { computed, ref } from 'vue';
-import { AsciiFormulaWriter } from '@/shared/formulas/writers/ascii';
-import FormulaView from '@/components/FormulaView.vue';
+  import { AsciiFormulaWriter } from '@/shared/formulas/writers/ascii';
+  import FormulaView from '@/components/FormulaView.vue';
+import { roundErrorString, roundValueString } from '@/shared/algorithm/rounding';
+import ProcessingInputText from '@/components/ProcessingInputText.vue';
 
   const service = useIndirectError(); 
   
@@ -19,18 +20,6 @@ import FormulaView from '@/components/FormulaView.vue';
     }
   };
 
-  const onValueUpdate = (varIndex: number, sampleIndex: number, newVal: string) => {
-    let val = Number(newVal);
-    if (isNaN(val)) val = 0;
-    service.table.variables[varIndex]!.values[sampleIndex] = new Decimal(val);
-  };
-
-  const onErrorUpdate = (varIndex: number, newVal: string) => {
-    let val = Number(newVal);
-    if (isNaN(val)) val = 0;
-    service.table.variables[varIndex]!.error = new Decimal(val);
-  };
-
   const result = computed(() => {
     const result = service.result.value;
     if (!result) return null;
@@ -38,7 +27,7 @@ import FormulaView from '@/components/FormulaView.vue';
       derivatives: Object.entries(result.partials)
         .map(([varName, partial]) => `(df)/(d${varName}) = ${ partial?.toString(new AsciiFormulaWriter()) ?? 0 }`),
       samples: result.samples.map((sample) => ({
-        result: `f = ${sample.result}`,
+        result: `f = ${sample.result.toFixed(2)}`,
         error: `theta = sqrt(${
               sample.derivatives
                 .map((derivative, i) => `(${derivative.toFixed(2)} * ${result.errors[i]!.toFixed(2)}) ^ 2`)
@@ -46,9 +35,16 @@ import FormulaView from '@/components/FormulaView.vue';
             }) = ${sample.error.toFixed(2)}`
       })),
       result: `f = (${result.samples.map((sample) => sample.result.toFixed(2)).join('+')})/${result.samples.length} = ${result.average.toFixed(2)}`, 
-      error: `theta = sqrt(${result.samples.map((sample) => `${sample.error.toFixed(2)} ^ 2`).join('+')})/${result.samples.length} = ${result.error.toFixed(2)}`
+      error: `theta = sqrt(${result.samples.map((sample) => `${sample.error.toFixed(2)} ^ 2`).join('+')})/${result.samples.length} = ${result.error.toFixed(2)}`,
+      errorValue: roundErrorString(result.error),
+      resultValue: roundValueString(result.average, result.error),
     };
   })
+
+  const DERIVATIVES = "0"
+  const SAMPLES = "1"
+  const RESULTS = "2"
+  const openedTabs = ref<string[]>([])
 </script>
 
 <template>
@@ -67,9 +63,10 @@ import FormulaView from '@/components/FormulaView.vue';
             {{ service.error.value }}
           </div>
 
-          <div class="flex items-center gap-2 w-[100%]">
+          <div class="flex items-center gap-2 w-[80%]">
             <label>Длина выборки:</label>
             <InputText 
+              class="flex-grow"
               v-model="tableLengthInput" 
               @blur="updateTableLength"
               @keyup.enter="updateTableLength"
@@ -77,6 +74,7 @@ import FormulaView from '@/components/FormulaView.vue';
           </div>
 
           <DataTable 
+            v-if="service.table.variables.length > 0"
             class="w-[100%]"
             :value="service.table.variables" 
             scrollable
@@ -90,10 +88,10 @@ import FormulaView from '@/components/FormulaView.vue';
 
             <Column field="error" header="Погрешность">
               <template #body="{ data, index }">
-                <InputText 
+                <ProcessingInputText 
                   class="w-[100px]"
-                  :modelValue="data.error"
-                  @update:modelValue="(val) => onErrorUpdate(index, val ?? '')"
+                  :value="data.error.toString()"
+                  @update="(val) => service.table.setVariableError(data.name, val ?? '')"
                 />
               </template>
             </Column>
@@ -103,16 +101,16 @@ import FormulaView from '@/components/FormulaView.vue';
               :key="i"
               :header="`№${i}`"
             >
-              <template #body="{ data, index: varIndex }">
-                <InputText 
+              <template #body="{ data }">
+                <ProcessingInputText
                   class="w-[100px]"
-                  :modelValue="data.values[i - 1] ?? 0"
-                  @update:modelValue="(val) => onValueUpdate(varIndex, i - 1, val ?? '')"
+                  :value="data.values[i - 1].toString()"
+                  @update="(val) => service.table.setVariableValue(data.name, i - 1, val ?? '')"
                 />
               </template>
             </Column>
           </DataTable>
-          <Button class="w-[80%]" @click="service.process">Посчитать</Button>
+          <Button :disabled="!service.canProcess.value" class="w-[80%]" @click="service.process">Посчитать</Button>
         </div>
       </template>
     </Card>
@@ -123,19 +121,42 @@ import FormulaView from '@/components/FormulaView.vue';
       </template>
 
       <template #content>
-        <p><b>Производные:</b></p>
-        <FormulaView v-for="derivative of result.derivatives" :value="derivative" />
+        <Accordion v-model="openedTabs" multiple>
+          <AccordionPanel :value="DERIVATIVES">
+            <AccordionHeader>Производные</AccordionHeader>
+            <AccordionContent>
+              <FormulaView v-for="derivative of result.derivatives" :value="derivative" />
+            </AccordionContent>
+          </AccordionPanel>
+          <AccordionPanel :value="SAMPLES">
+            <AccordionHeader>Вычисление выборок</AccordionHeader>
+            <AccordionContent>
 
-        <p><b>Значения по выборкам:</b></p>
-        <div v-for="(sample, sampleId) of result.samples">
-          <p>----- Выборка №{{ sampleId + 1 }}:</p>
-          <FormulaView :value="sample.result" />
-          <FormulaView :value="sample.error" />
+              <Accordion multiple>
+                <template v-for="(sample, sampleId) of result.samples">
+                  <AccordionPanel :value="sampleId">
+                    <AccordionHeader>Выборка №{{ sampleId + 1 }}</AccordionHeader>
+                    <AccordionContent>
+                      <FormulaView :value="sample.result" />
+                      <FormulaView :value="sample.error" />
+                    </AccordionContent>
+                  </AccordionPanel>
+                </template>
+              </Accordion>
+
+            </AccordionContent>
+          </AccordionPanel>
+          <AccordionPanel :value="RESULTS">
+            <AccordionHeader>Вычисление результата</AccordionHeader>
+            <AccordionContent>
+              <FormulaView :value="result.result" />
+              <FormulaView :value="result.error" />
+            </AccordionContent>
+          </AccordionPanel>
+        </Accordion>
+        <div class="p-3 text-center">
+          <p class="text-2xl mt-3">Значение x &approx; <b>{{ result.resultValue }} &plusmn; {{ result.errorValue }}</b></p>
         </div>
-
-        <p><b>Итоговые значения:</b></p>
-        <FormulaView :value="result.result" />
-        <FormulaView :value="result.error" />
       </template>
     </Card>
   </CardList>

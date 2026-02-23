@@ -33,6 +33,7 @@
 
 <template>
   <math-field
+    class="p-inputtext p-component p-filled math-field"
     :ref="mathFieldRef"
     :value="modelValue"
     v-bind="cleanProps"
@@ -40,8 +41,8 @@
   ></math-field>
 </template>
 
-<style>
-  math-field {
+<style scoped>
+  .math-field {
     font-size: 24px;
   }
 </style>

@@ -3,7 +3,7 @@ import { DerivativeContext, ExecutionContext, type Formula } from "@/shared/form
 import { VariableFormula } from "@/shared/formulas/impl/variable";
 import { parseFormulaFromLatex } from "@/shared/formulas/parse/latex";
 import Decimal from "decimal.js";
-import { reactive, ref, watch } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 
 export type VarInfo = {
   name: string,
@@ -18,10 +18,10 @@ export class VarTable {
   public getLength(): number { return this.length; }
 
   private stretchSample(sample: Decimal[]): Decimal[] {
-    if (sample.length >= length)
+    if (sample.length >= this.length)
       sample.length = this.length;
     else
-      while (sample.length != this.length)
+      while (sample.length < this.length)
         sample.push(new Decimal(0))
     return sample;
   }
@@ -53,8 +53,10 @@ export class VarTable {
       throw new Error(`sampleId is out of range: ${sampleId} >= ${this.length}`);
 
     const list = <Record<string, Decimal>>{};
-    for (const varInfo of this.variables)
-      list[varInfo.name] = varInfo.values[sampleId]!;
+    for (const varInfo of this.variables) {
+      if (varInfo.values[sampleId] === undefined) throw new Error(`inconsistent variable list`);
+      list[varInfo.name] = varInfo.values[sampleId];
+    }
 
     return new ExecutionContext(list);
   }
@@ -67,6 +69,32 @@ export class VarTable {
     for (const varName of vars)
       if (!this.hasVariable(varName))
         this.addVariable(varName)
+  }
+
+  private parseDecimal(value: string): Decimal | null {
+    let val = Number(value.replace(',', '.'));
+    if (isNaN(val)) return null;
+    return new Decimal(val);
+  }
+
+  private getVariableByName(name: string): VarInfo | undefined {
+    return this.variables.find((varInfo) => varInfo.name == name)
+  }
+
+  public setVariableValue(varName: string, sampleIndex: number, value: string) {
+    const decimal = this.parseDecimal(value);
+    if (!decimal) return;
+    const variable = this.getVariableByName(varName); 
+    if (variable?.values[sampleIndex] === undefined) throw Error("invalid varName or sampleIndex");
+    variable.values[sampleIndex] = decimal;
+  }
+
+  public setVariableError(varName: string, value: string) {
+    let decimal = this.parseDecimal(value);
+    if (!decimal) return;
+    const variable = this.getVariableByName(varName); 
+    if (variable === undefined) throw Error("invalid varName");
+    variable.error = decimal;
   }
 }
 
@@ -107,8 +135,10 @@ export default function useIndirectError() {
     table.applyNewVariables(vars);
   })
 
+  const canProcess = computed(() => error.value == null && formula.value != "");
+
   const process = () => {
-    if (error.value != null) return;
+    if (!canProcess.value) return;
 
     let parsed = parseFormulaFromLatex(formula.value);
     const partials = table.variables
@@ -156,7 +186,8 @@ export default function useIndirectError() {
     table,
     error,
     result,
-    process
+    process,
+    canProcess
   }
 }
 
