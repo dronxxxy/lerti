@@ -89,7 +89,7 @@
     set: (value) => { 
       service.xValues.value = value
       //МНК
-      service.approximate()
+      service.approximate(service.xValues.value, service.yValues.value, "linear")
     }
   })
 
@@ -98,12 +98,12 @@
     set: (value) => { 
       service.yValues.value = value
       // МНК
-      service.approximate()
+      service.approximate(service.xValues.value, service.yValues.value, "linear")
     }
   })
 
   watch([() => service.xValues.value, () => service.yValues.value], () => {
-    service.approximate()
+    service.approximate(service.xValues.value, service.yValues.value, "linear")
   }, { deep: true })
 </script>
 
@@ -150,14 +150,14 @@
             <div class="p-3 bg-blue-50 rounded">
               <div class="text-sm text-gray-600">Коэффициенты</div>
               <div class="font-mono text-lg">
-                a = {{ service.result.value.a?.toFixed(4) }}<br>
+                a = {{ service.result.value.k?.toFixed(4) }}<br>
                 b = {{ service.result.value.b?.toFixed(4) }}
               </div>
             </div>
             <div class="p-3 bg-green-50 rounded">
               <div class="text-sm text-gray-600">Качество аппроксимации</div>
               <div class="font-mono text-lg">
-                R2 = {{ service.result.value.rSquared?.toFixed(4) }}
+                R2 = {{ service.result.value.Squared?.toFixed(4) }}
               </div>
             </div>
           </div>
@@ -165,7 +165,7 @@
           <div class="mt-3 p-3 bg-gray-50 rounded">
             <div class="text-sm text-gray-600">Уравнение</div>
             <div class="font-mono text-lg">
-              y = {{ service.result.value.a?.toFixed(4) }}x + {{ service.result.value.b?.toFixed(4) }}
+              y = {{ service.result.value.k?.toFixed(4) }}x + {{ service.result.value.b?.toFixed(4) }}
             </div>
           </div>
         </template>

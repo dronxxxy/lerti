@@ -1,21 +1,80 @@
 import { ref } from "vue";
-export type approx = {
+import Decimal from "decimal.js";
+
+export type ApproxResult = {
+    k: Decimal, 
+    b: Decimal, 
+    Squared: Decimal
 }
 
 export default function useMinSquareMethod() {
-    const xValues = ref<number[]>([0, 0, 0, 0, 0]);
+    const xValues = ref<number[]>([0,0,0,0,0]);
     const xadditionalUs = ref<Record<number, number>>({});
     const xadditionalTs = ref<Record<number, number>>({});
 
-    const yValues = ref<number[]>([0, 0, 0, 0, 0]);
+    const yValues = ref<number[]>([0,0,0,0,0]);
     const yadditionalUs = ref<Record<number, number>>({});
     const yadditionalTs = ref<Record<number, number>>({});
-    const result = ref<{a: number, b: number, rSquared: number} | null>(null)
+    const result = ref<ApproxResult | null>(null)
 
-    const approximate = () => {
+    const approximate = (xArr: number[], yArr: number[], type?: string) => {
+        if (type === "linear") {
+            
+            const n = new Decimal(xArr.length);
+            
+            const xDec = xArr.map(x => new Decimal(x));
+            const yDec = yArr.map(y => new Decimal(y));
+            
+            let sumX = new Decimal(0), sumY = new Decimal(0), sumXY = new Decimal(0), sumX2 = new Decimal(0);
+            
+            for (let i = 0; i < xArr.length; i++) {
+                sumX = sumX.plus(xDec[i]!);
+                sumY = sumY.plus(yDec[i]!);
+                sumXY = sumXY.plus(xDec[i]!.times(yDec[i]!));
+                sumX2 = sumX2.plus(xDec[i]!.times(xDec[i]!));
+            }
+            
+            const denominator = n.times(sumX2).minus(sumX.times(sumX));
+
+            if (denominator.equals(0)) {
+                console.error("Знаменатель равен нулю (все x одинаковы)");
+                return null;
+            }
+
+            const k = n.times(sumXY).minus(sumX.times(sumY)).dividedBy(denominator);
+            const b = sumY.minus(k.times(sumX)).dividedBy(n);
+
+            let sumResiduals = new Decimal(0);
+            let sumTotal = new Decimal(0);
+            const meanY = sumY.dividedBy(n);
+            
+            for (let i = 0; i < xArr.length; i++) {
+                const yPredicted = k.times(xDec[i]!).plus(b);
+                const residual = yDec[i]!.minus(yPredicted);
+                sumResiduals = sumResiduals.plus(residual.times(residual));
+                
+                const totalDiff = yDec[i]!.minus(meanY);
+                sumTotal = sumTotal.plus(totalDiff.times(totalDiff));
+            }
+            
+            const Squared = new Decimal(1).minus(sumResiduals.dividedBy(sumTotal));
+
+            const approxResult: ApproxResult = {
+                k: k,
+                b: b,
+                Squared: Squared
+            }
+            result.value = approxResult;
+            return result.value
+        }
+        return null;
     }
 
-    return{
+    const calculateFromRefs = () => {
+        return approximate(xValues.value, yValues.value, "linear");
+    }
+
+    return {
         xValues,
         xadditionalUs,
         xadditionalTs,
@@ -23,6 +82,7 @@ export default function useMinSquareMethod() {
         yadditionalUs,
         yadditionalTs,
         result,
-        approximate
+        approximate,
+        calculateFromRefs
     }
 }
