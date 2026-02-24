@@ -17,10 +17,10 @@ export class ExecutionContext {
 }
 
 export enum FormulaLevel {
-  BINOP_ADD = 0,
+  UNARY = 0,
+  BINOP_ADD,
   POW,
   BINOP_MUL,
-  UNARY,
   VALUE,
 }
 

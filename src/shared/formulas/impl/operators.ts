@@ -19,12 +19,13 @@ abstract class OperatorFormula extends Formula {
   }
 
   protected abstract writeOperator(writer: FormulaWriter): void;
+  protected isRightSideHigher(): boolean { return false };
 
   public write(writer: FormulaWriter): void {
     const level = this.getLevel();
     this.left.writePrioritized(writer, level);
     this.writeOperator(writer);
-    this.right.writePrioritized(writer, level);
+    this.right.writePrioritized(writer, level, this.isRightSideHigher());
   }
 }
 
@@ -148,4 +149,6 @@ export class DivideOperatorFormula extends OperatorFormula {
   public getLevel(): FormulaLevel {
     return FormulaLevel.BINOP_MUL;
   }
+
+  protected override isRightSideHigher(): boolean { return true }
 }

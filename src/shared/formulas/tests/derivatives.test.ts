@@ -1,44 +1,23 @@
 import { expect, test } from "vitest";
-import { DerivativeContext, Formula } from "../formula";
+import { DerivativeContext } from "../formula";
 import { AsciiFormulaWriter } from "../writers/ascii";
-import { AddOperatorFormula, MultiplyOperatorFormula } from "../impl/operators";
-import { VariableFormula } from "../impl/variable";
-import { ConstantNumberFormula } from "../impl/constant";
-import Decimal from "decimal.js";
-import { LnFormula } from "../impl/ln";
+import { parseFormulaFromAscii } from "../parse/ascii";
 
-function testDerivative(formula: Formula, output: string) {
-  const writer = new AsciiFormulaWriter();
-  const derivative = formula.buildDerivative(new DerivativeContext("x"));
-  derivative?.write(writer);
-  expect(writer.get()).toBe(output);
+function testDerivative(source: string, output: string) {
+  test(`derivative: ${source}`, () => {
+    const formula = parseFormulaFromAscii(source);
+    const derivative = formula.buildDerivative(new DerivativeContext("x"));
+    expect(derivative?.toString(new AsciiFormulaWriter()) ?? "0").toBe(output);
+  })
 }
 
-test("x + y", () =>
-  testDerivative(
-    new AddOperatorFormula(new VariableFormula("x"), new VariableFormula("y")),
-    "1",
-  ));
+testDerivative("x + 1", "1")
+testDerivative("x * 6", "1*6")
+testDerivative("6 * x", "1*6")
+testDerivative("x * (2 * x)", "1*2*x+1*2*x")
+testDerivative("1/x", "(-1*1)/(x^2)")
+testDerivative("x/1", "1/1")
+testDerivative("x/(x^2)", "(1*(x^2)-x*(x^2)*1/x*2)/((x^2)^2)")
+testDerivative("ln(x)", "1/x")
+testDerivative("ln(2*x)", "1*2/(2*x)")
 
-test("ln(x * (2 * z)) * (1 + 2 + y)", () =>
-  testDerivative(
-    new MultiplyOperatorFormula(
-      new LnFormula(
-        new MultiplyOperatorFormula(
-          new VariableFormula("x"),
-          new MultiplyOperatorFormula(
-            new ConstantNumberFormula(new Decimal(2)),
-            new VariableFormula("z"),
-          ),
-        ),
-      ),
-      new AddOperatorFormula(
-        new AddOperatorFormula(
-          new ConstantNumberFormula(new Decimal(1)),
-          new ConstantNumberFormula(new Decimal(2)),
-        ),
-        new VariableFormula("y"),
-      ),
-    ),
-    "((1*(2*z))/(x*(2*z)))*((1+2)+y)",
-  ));
