@@ -3,7 +3,7 @@ import { DerivativeContext, ExecutionContext, Formula, FormulaLevel } from "../f
 import type { FormulaWriter } from "../writer";
 
 export class UnaryMinusFormula extends Formula {
-  constructor (private inner: Formula) {
+  constructor (public inner: Formula) {
     super();
   }
 
@@ -26,7 +26,15 @@ export class UnaryMinusFormula extends Formula {
     return FormulaLevel.UNARY;
   }
 
-  protected *getChildren(): IterableIterator<Formula> {
+  public equals(other: Formula): boolean {
+    return other instanceof UnaryMinusFormula && this.inner.equals(other.inner);
+  }
+
+  public mapChildren(mapper: (child: Formula) => Formula | null): void {
+    this.inner = mapper(this.inner) ?? this.inner;
+  }
+
+  public *getChildren(): IterableIterator<Formula> {
     yield this.inner; 
   }
 }

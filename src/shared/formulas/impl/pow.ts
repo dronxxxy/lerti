@@ -6,8 +6,8 @@ import { LnFormula } from "./ln";
 
 export class PowFormula extends Formula {
   constructor(
-    private inner: Formula,
-    private power: Formula,
+    public inner: Formula,
+    public power: Formula,
   ) {
     super();
   }
@@ -26,7 +26,7 @@ export class PowFormula extends Formula {
     return this.inner.execute(context).pow(this.power.execute(context));
   }
 
-  protected *getChildren(): IterableIterator<Formula> {
+  public *getChildren(): IterableIterator<Formula> {
     yield this.inner;
     yield this.power;
   }
@@ -36,6 +36,15 @@ export class PowFormula extends Formula {
     this.inner.writePrioritized(writer, level, true);
     writer.writePow();
     this.power.writePrioritized(writer, level);
+  }
+
+  public equals(other: Formula): boolean {
+    return other instanceof PowFormula && this.inner.equals(other.inner) && this.power.equals(other.power);
+  }
+
+  public mapChildren(mapper: (child: Formula) => Formula | null): void {
+    this.inner = mapper(this.inner) ?? this.inner;
+    this.power = mapper(this.power) ?? this.power;
   }
 
   public getLevel(): FormulaLevel {

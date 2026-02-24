@@ -25,11 +25,19 @@ export class LnFormula extends Formula {
     writer.endScope();
   }
 
-  protected *getChildren(): IterableIterator<Formula> {
+  public *getChildren(): IterableIterator<Formula> {
     yield this.inner;
+  }
+
+  public mapChildren(mapper: (child: Formula) => Formula | null): void {
+    this.inner = mapper(this.inner) ?? this.inner;
   }
 
   public getLevel(): FormulaLevel {
     return FormulaLevel.VALUE;
+  }
+
+  public equals(other: Formula): boolean {
+    return other instanceof LnFormula && this.inner.equals(other.inner);
   }
 }

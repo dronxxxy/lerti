@@ -5,17 +5,22 @@ import { FormulaWriter } from "../writer";
 import { ConstantNumberFormula } from "./constant";
 import { UnaryMinusFormula } from "./unary";
 
-abstract class OperatorFormula extends Formula {
+export abstract class OperatorFormula extends Formula {
   constructor(
-    protected left: Formula,
-    protected right: Formula,
+    public left: Formula,
+    public right: Formula,
   ) {
     super();
   }
 
-  protected *getChildren(): IterableIterator<Formula> {
+  public *getChildren(): IterableIterator<Formula> {
     yield this.left;
     yield this.right;
+  }
+
+  public mapChildren(mapper: (child: Formula) => Formula | null): void {
+    this.left = mapper(this.left) ?? this.left;
+    this.right = mapper(this.right) ?? this.right;
   }
 
   protected abstract writeOperator(writer: FormulaWriter): void;
@@ -51,6 +56,10 @@ export class AddOperatorFormula extends OperatorFormula {
   public getLevel(): FormulaLevel {
     return FormulaLevel.BINOP_ADD;
   }
+
+  public equals(other: Formula): boolean {
+    return other instanceof AddOperatorFormula && this.left.equals(other.left) && this.right.equals(other.right);
+  }
 }
 
 export class SubtractOperatorFormula extends OperatorFormula {
@@ -74,6 +83,10 @@ export class SubtractOperatorFormula extends OperatorFormula {
 
   public getLevel(): FormulaLevel {
     return FormulaLevel.BINOP_ADD;
+  }
+
+  public equals(other: Formula): boolean {
+    return other instanceof SubtractOperatorFormula && this.left.equals(other.left) && this.right.equals(other.right);
   }
 }
 
@@ -109,6 +122,10 @@ export class MultiplyOperatorFormula extends OperatorFormula {
 
   public getLevel(): FormulaLevel {
     return FormulaLevel.BINOP_MUL;
+  }
+
+  public equals(other: Formula): boolean {
+    return other instanceof MultiplyOperatorFormula && this.left.equals(other.left) && this.right.equals(other.right);
   }
 }
 
@@ -151,4 +168,8 @@ export class DivideOperatorFormula extends OperatorFormula {
   }
 
   protected override isRightSideHigher(): boolean { return true }
+
+  public equals(other: Formula): boolean {
+    return other instanceof DivideOperatorFormula && this.left.equals(other.left) && this.right.equals(other.right);
+  }
 }

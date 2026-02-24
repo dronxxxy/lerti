@@ -29,6 +29,7 @@ export abstract class Formula {
   public abstract execute(context: ExecutionContext): Decimal;
   public abstract write(writer: FormulaWriter): void;
   public abstract getLevel(): FormulaLevel;
+  public abstract equals(other: Formula): boolean;
 
   public writePrioritized(writer: FormulaWriter, outerLevel: FormulaLevel, equals: boolean = false): string {
     const level = this.getLevel();
@@ -44,7 +45,8 @@ export abstract class Formula {
     return writer.get();
   }
 
-  protected abstract getChildren(): IterableIterator<Formula>;
+  public abstract mapChildren(mapper: (child: Formula) => Formula | null): void;
+  public abstract getChildren(): IterableIterator<Formula>;
 
   public *iterate(): IterableIterator<Formula> {
     yield this;

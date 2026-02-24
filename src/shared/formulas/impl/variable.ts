@@ -26,7 +26,12 @@ export class VariableFormula extends Formula {
     return null;
   }
 
-  protected *getChildren(): IterableIterator<Formula> {}
+  public equals(other: Formula): boolean {
+    return other instanceof VariableFormula && this.name == other.name;
+  }
+
+  public mapChildren(_mapper: (child: Formula) => Formula | null): void {}
+  public *getChildren(): IterableIterator<Formula> {}
 
   public getLevel(): FormulaLevel {
     return FormulaLevel.VALUE;

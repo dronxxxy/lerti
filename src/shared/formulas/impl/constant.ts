@@ -3,7 +3,7 @@ import { DerivativeContext, ExecutionContext, Formula, FormulaLevel } from "../f
 import type { FormulaWriter } from "../writer";
 
 export class ConstantNumberFormula extends Formula {
-  constructor(private value: Decimal) {
+  constructor(public value: Decimal) {
     super();
   }
 
@@ -19,9 +19,15 @@ export class ConstantNumberFormula extends Formula {
     writer.writeNumber(this.value);
   }
 
-  protected *getChildren(): IterableIterator<Formula> {}
+  public *getChildren(): IterableIterator<Formula> {}
+
+  public mapChildren(_mapper: (child: Formula) => Formula | null): void {}
 
   public getLevel(): FormulaLevel {
     return FormulaLevel.VALUE;
+  }
+
+  public equals(other: Formula): boolean {
+    return other instanceof ConstantNumberFormula && this.value.equals(other.value);
   }
 }
