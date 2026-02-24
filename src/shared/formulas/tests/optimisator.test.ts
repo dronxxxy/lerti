@@ -7,6 +7,7 @@ import { DefaultOptimisator } from "../optimisators/default";
 import { MultiplyUnaryOptimisator } from "../optimisators/multiplyUnary";
 import { PowUnaryOptimisator } from "../optimisators/powUnary";
 import { MultiplyOneOptimisator } from "../optimisators/multiplyOne";
+import { ConstantPropagationOptimisator } from "../optimisators/constantPropagation";
 
 function testOptimisator(source: string, output: string, optimisator: FormulaOptimisator) {
   test(`optimisator: ${source} ==> ${output}`, () => {
@@ -25,4 +26,5 @@ testOptimisator("(-y)^3",                "-y^3",    new PowUnaryOptimisator())
 testOptimisator("1*x",                   "x",       new MultiplyOneOptimisator())
 testOptimisator("x*1",                   "x",       new MultiplyOneOptimisator())
 testOptimisator("x/1",                   "x",       new MultiplyOneOptimisator())
+testOptimisator("2*2^2+ln(1)",           "8",       new ConstantPropagationOptimisator())
 testOptimisator("x*(-y)^2*y/(-y^3)+y-y", "-x",      DefaultOptimisator)
