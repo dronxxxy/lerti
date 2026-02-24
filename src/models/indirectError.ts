@@ -1,6 +1,7 @@
 import { AlgorithmError, throwAlgorithmError } from "@/shared/error";
 import { DerivativeContext, ExecutionContext, type Formula } from "@/shared/formulas/formula";
 import { VariableFormula } from "@/shared/formulas/impl/variable";
+import { DefaultOptimisator } from "@/shared/formulas/optimisators/default";
 import { parseFormulaFromLatex } from "@/shared/formulas/parse/latex";
 import Decimal from "decimal.js";
 import { computed, reactive, ref, watch } from "vue";
@@ -131,7 +132,7 @@ export default function useIndirectError() {
     )
     if (!parsed) return;
     error.value = null;
-    const vars = detectVariableList(parsed)
+    const vars = detectVariableList(DefaultOptimisator.optimise(parsed) ?? parsed)
     table.applyNewVariables(vars);
   })
 
@@ -141,8 +142,10 @@ export default function useIndirectError() {
     if (!canProcess.value) return;
 
     let parsed = parseFormulaFromLatex(formula.value);
+    parsed = DefaultOptimisator.optimise(parsed) ?? parsed;
     const partials = table.variables
-      .map((varInfo) => parsed.buildDerivative(new DerivativeContext(varInfo.name)));
+      .map((varInfo) => parsed.buildDerivative(new DerivativeContext(varInfo.name)))
+      .map(formula => formula && (DefaultOptimisator.optimise(formula) ?? formula));
 
     const samples = [];
     for (let i = 0; i < table.getLength(); i++) {
