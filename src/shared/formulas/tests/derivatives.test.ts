@@ -20,4 +20,5 @@ testDerivative("x/1", "1/1")
 testDerivative("x/(x^2)", "(1*(x^2)-x*(x^2)*1/x*2)/((x^2)^2)")
 testDerivative("ln(x)", "1/x")
 testDerivative("ln(2*x)", "1*2/(2*x)")
+testDerivative("-(x*2)", "-1*2")
 
