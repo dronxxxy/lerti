@@ -10,11 +10,20 @@ export class ComplexOptimisator extends FormulaOptimisator {
   public optimise(formula: Formula): Formula | null {
     let wasOptimised = false;
     optimiseLoop: while (true) {
-      formula.mapChildren((formula) => this.optimise(formula))
+      let innerOptimized = false;
+      formula.mapChildren((formula) => {
+        const value = this.optimise(formula)
+        if (value !== null) {
+          wasOptimised = true;
+          innerOptimized = true;
+        }
+        return value;
+      })
+      if (innerOptimized) continue optimiseLoop;
 
       for (const optimisator of this.optimisators) {
         const optimised = optimisator.optimise(formula);
-        if (optimised != null) {
+        if (optimised !== null) {
           formula = optimised;
           wasOptimised = true;
           continue optimiseLoop;

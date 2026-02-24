@@ -26,6 +26,10 @@ export abstract class BinopCompressOptimisator<AddBinop extends OperatorFormula,
   protected abstract multiply(element: ElementInfo): Formula;
   protected abstract onlySub(formula: Formula): Formula;
 
+  protected abstract addValue(a: Decimal, b: Decimal): Decimal;
+  protected abstract mulValue(value: Decimal, count: Decimal): Decimal;
+  protected abstract nullElementValue(): Decimal;
+
   private addAll(elements: ElementInfo[]): Formula {
     return elements
       .map((element) => element.count.equals(1) ? element.formula : this.multiply(element))
@@ -93,13 +97,29 @@ export abstract class BinopCompressOptimisator<AddBinop extends OperatorFormula,
       }
     }
 
-    if (!wasCompressed) return null;
+    const constElements = elements.map(
+      (element) => element.formula instanceof ConstantNumberFormula ?
+        this.mulValue(element.formula.value, element.count) :
+        this.nullElementValue()
+    ).filter((element) => !element.equals(this.nullElementValue()));
+
+    if (!wasCompressed && constElements.length < 2) return null;
 
     elements = elements.filter((element) => !element.count.isZero());
-
     if (elements.length == 0) return this.nullElement();
 
+    elements = elements.filter((element) => !(element.formula instanceof ConstantNumberFormula));
+
     const add = elements.filter((element) => element.count.isPositive());
+
+    if (constElements.length > 0) {
+      let result = constElements.reduce((acc, value) => this.addValue(acc, value));
+      if (!result.equals(this.nullElementValue()))
+        add.unshift({
+          count: new Decimal(1),
+          formula: new ConstantNumberFormula(result)
+        })
+    }
 
     const sub = elements
       .filter((element) => element.count.isNegative())
@@ -120,6 +140,18 @@ export class MultiplyCompressOptimisator extends BinopCompressOptimisator<Multip
   private cachedNullElement = new ConstantNumberFormula(new Decimal(1));
 
   constructor() { super(MultiplyOperatorFormula, DivideOperatorFormula); }
+
+  protected addValue(a: Decimal, b: Decimal): Decimal {
+    return a.mul(b);
+  }
+
+  protected mulValue(value: Decimal, count: Decimal): Decimal {
+    return value.pow(count);
+  }
+
+  protected nullElementValue(): Decimal {
+    return new Decimal(1);
+  }
 
   protected nullElement(): Formula {
     return this.cachedNullElement;
@@ -152,6 +184,18 @@ export class AddCompressOptimisator extends BinopCompressOptimisator<AddOperator
 
   protected nullElement(): Formula {
     return this.cachedNullElement;
+  }
+
+  protected addValue(a: Decimal, b: Decimal): Decimal {
+    return a.add(b);
+  }
+
+  protected mulValue(value: Decimal, count: Decimal): Decimal {
+    return value.mul(count);
+  }
+
+  protected nullElementValue(): Decimal {
+    return new Decimal(0);
   }
 
   protected multiply(element: ElementInfo): Formula {
