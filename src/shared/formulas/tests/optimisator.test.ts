@@ -6,6 +6,7 @@ import { AddCompressOptimisator, MultiplyCompressOptimisator } from "../optimisa
 import { DefaultOptimisator } from "../optimisators/default";
 import { MultiplyUnaryOptimisator } from "../optimisators/multiplyUnary";
 import { PowUnaryOptimisator } from "../optimisators/powUnary";
+import { MultiplyOneOptimisator } from "../optimisators/multiplyOne";
 
 function testOptimisator(source: string, output: string, optimisator: FormulaOptimisator) {
   test(`optimisator: ${source} ==> ${output}`, () => {
@@ -18,6 +19,10 @@ function testOptimisator(source: string, output: string, optimisator: FormulaOpt
 testOptimisator("x*y^2*y/y^3",           "x",       new MultiplyCompressOptimisator())
 testOptimisator("x+y-5x+3y",             "y*4-x*4", new AddCompressOptimisator())
 testOptimisator("3*(-y)",                "-3*y",    new MultiplyUnaryOptimisator())
+testOptimisator("(-3)*y",                "-3*y",    new MultiplyUnaryOptimisator())
 testOptimisator("(-y)^2",                "y^2",     new PowUnaryOptimisator())
 testOptimisator("(-y)^3",                "-y^3",    new PowUnaryOptimisator())
+testOptimisator("1*x",                   "x",       new MultiplyOneOptimisator())
+testOptimisator("x*1",                   "x",       new MultiplyOneOptimisator())
+testOptimisator("x/1",                   "x",       new MultiplyOneOptimisator())
 testOptimisator("x*(-y)^2*y/(-y^3)+y-y", "-x",      DefaultOptimisator)
