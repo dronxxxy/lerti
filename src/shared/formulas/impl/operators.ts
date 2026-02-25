@@ -58,7 +58,9 @@ export class AddOperatorFormula extends OperatorFormula {
   }
 
   public equals(other: Formula): boolean {
-    return other instanceof AddOperatorFormula && this.left.equals(other.left) && this.right.equals(other.right);
+    return other instanceof AddOperatorFormula &&
+      ((this.left.equals(other.left) && this.right.equals(other.right)) ||
+      (this.left.equals(other.right) && this.right.equals(other.left)));
   }
 }
 
@@ -86,7 +88,9 @@ export class SubtractOperatorFormula extends OperatorFormula {
   }
 
   public equals(other: Formula): boolean {
-    return other instanceof SubtractOperatorFormula && this.left.equals(other.left) && this.right.equals(other.right);
+    return other instanceof SubtractOperatorFormula && 
+      ((this.left.equals(other.left) && this.right.equals(other.right)) ||
+      (this.left.equals(other.right) && this.right.equals(other.left)));
   }
 }
 
@@ -125,7 +129,9 @@ export class MultiplyOperatorFormula extends OperatorFormula {
   }
 
   public equals(other: Formula): boolean {
-    return other instanceof MultiplyOperatorFormula && this.left.equals(other.left) && this.right.equals(other.right);
+    return other instanceof MultiplyOperatorFormula &&
+      ((this.left.equals(other.left) && this.right.equals(other.right)) ||
+      (this.left.equals(other.right) && this.right.equals(other.left)));
   }
 }
 
