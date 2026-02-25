@@ -1,10 +1,11 @@
 <script setup lang="ts">
-  import type Decimal from 'decimal.js';
+  import Decimal from 'decimal.js';
   import { InputNumber, Button, FloatLabel, InputGroup, InputGroupAddon, Accordion, AccordionPanel, AccordionHeader, AccordionContent, DataTable, Column } from 'primevue';
   import { ref } from 'vue';
-  import DocsButton from './DocsButton.vue';
+  import DocsButton from '@/components/basics/DocsButton.vue';
+  import InputDecimal from '@/components/basics/InputDecimal.vue';
 
-  const model = defineModel<Record<number, number>>({
+  const model = defineModel<Record<number, Decimal>>({
     default: {}
   })
 
@@ -15,7 +16,7 @@
   const length = ref<number>(6)
 
   const add = () => {
-    model.value = { ...model.value, [length.value]: 0 };
+    model.value = { ...model.value, [length.value]: new Decimal(0) };
     length.value += 1;
   }
 
@@ -45,8 +46,8 @@
   <div class="flex flex-col items-stretch mt-2">
     <InputGroup class="mb-2" v-for="n in Object.keys(model)">
       <InputGroupAddon>N = {{ n }}</InputGroupAddon>
-      <InputNumber
-        v-model="model[Number(n)]"
+      <InputDecimal
+        v-model="model[Number(n)]!"
         :max-fraction-digits="2"
       />
       <Button severity="danger" @click="() => deleteN(Number(n))">Удалить</Button>

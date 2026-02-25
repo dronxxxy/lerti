@@ -1,21 +1,17 @@
 <script setup lang="ts">
-  import useSimpleError from '@/models/simpleError';
-  import SimpleErrorResultView from '@/components/SimpleErrorResultView.vue';
-  import Sample from '@/components/Sample.vue';
-  import { Button, Card, InputNumber, Accordion, AccordionHeader, AccordionPanel, AccordionContent, Badge, InputGroup, InputGroupAddon } from 'primevue'
+  import useSimpleError from '@/composables/simpleError';
+  import SimpleErrorResultView from './SimpleErrorResultView.vue';
+  import { Button, Card, Accordion, AccordionHeader, AccordionPanel, AccordionContent, Badge, InputGroup, InputGroupAddon } from 'primevue'
   import { MAX_FRACTION_DIGITS } from '@/shared/constants';
-  import { ref } from 'vue';
-  import AdditionalTableInput from '@/components/AdditionalTableInput.vue';
-  import { U_TABLE_95 } from '@/shared/algorithm/cleanMisses';
-  import { T_TABLE_95 } from '@/shared/algorithm/sample';
-  import DocsButton from '@/components/DocsButton.vue';
+  import AdditionalTableInput from './AdditionalTableInput.vue';
+  import { U_TABLE_95 } from '@/shared/math/simpleError/cleanMisses';
+  import { T_TABLE_95 } from '@/shared/math/sample';
+  import DocsButton from '@/components/basics/DocsButton.vue';
   import CardList from '@/components/CardList.vue';
+  import SampleInput from '@/components/math/SampleInput.vue';
+  import InputDecimal from '@/components/basics/InputDecimal.vue';
 
   const service = useSimpleError()
-
-  const ADDITIONAL_US = "0"
-  const ADDITIONAL_TS = "1"
-  const openedTabs = ref<string[]>([])
 </script>
 
 <template>
@@ -29,20 +25,20 @@
       </template>
       <template #content>
         <div class="flex flex-col gap-5 items-stretch pt-2">
-          <Sample v-model="service.values.value"/>
+          <SampleInput v-model="service.values.value"/>
 
           <div class="flex flex-row items-center gap-2">
             <InputGroup>
               <InputGroupAddon>Приборная погрешность &theta;<sub>x</sub></InputGroupAddon>
-              <InputNumber
+              <InputDecimal
                 v-model="service.machineError.value"
                 :max-fraction-digits="MAX_FRACTION_DIGITS"
               />
             </InputGroup>
             <DocsButton :page="26" module="2.8." />
           </div>
-          <Accordion v-model="openedTabs" multiple>
-            <AccordionPanel :value="ADDITIONAL_US">
+          <Accordion multiple>
+            <AccordionPanel value="ADDITIONAL_US">
               <AccordionHeader>
                 <div class="flex flex-row items-center gap-2">
                   <span>Дополнительные значения u<sub>P,N</sub></span>
@@ -53,7 +49,7 @@
                 <AdditionalTableInput v-model="service.additionalUs.value" :default-table="U_TABLE_95" />
               </AccordionContent>
             </AccordionPanel>
-            <AccordionPanel :value="ADDITIONAL_TS">
+            <AccordionPanel value="ADDITIONAL_TS">
               <AccordionHeader>
                 <div class="flex flex-row items-center gap-2">
                   <span>Дополнительные значения t<sub>P,N</sub></span>

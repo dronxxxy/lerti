@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import IndirectError from "./pages/IndirectError.vue";
-import SimpleError from "./pages/SimpleError.vue";
+import SimpleError from "./pages/simpleError/SimpleError.vue";
 import Approximation from "./pages/Approximation.vue";
 
 export const routes = [

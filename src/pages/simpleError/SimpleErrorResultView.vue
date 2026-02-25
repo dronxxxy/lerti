@@ -1,12 +1,12 @@
 <script setup lang="ts">
   import { Divider, Accordion, AccordionContent, AccordionHeader, AccordionPanel } from 'primevue';
-  import { type SimpleErrorResult } from '@/models/simpleError';
-  import SampleView from './SampleView.vue';
+  import SampleView from '@/components/math/SampleView.vue';
   import { ref } from 'vue';
-  import DocsButton from './DocsButton.vue';
+  import DocsButton from '@/components/basics/DocsButton.vue';
+  import type { CalculationResult } from '@/shared/math/simpleError/main';
 
   const props = defineProps<{
-    result: SimpleErrorResult
+    result: CalculationResult 
   }>()
 
   const RUDE_CLEANING = "0"

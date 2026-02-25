@@ -1,13 +1,13 @@
 <script setup lang="ts">
   import CardList from '@/components/CardList.vue';
   import { Card, DataTable, Column, InputText, Button, AccordionPanel, AccordionHeader, Accordion, AccordionContent } from 'primevue';
-  import FormulaInput from '@/components/FormulaInput.vue';
-  import useIndirectError from '@/models/indirectError';
+  import FormulaInput from '@/components/math/FormulaInput.vue';
+  import useIndirectError from '@/composables/indirectError';
   import { computed, ref } from 'vue';
-  import { AsciiFormulaWriter } from '@/shared/formulas/writers/ascii';
-  import FormulaView from '@/components/FormulaView.vue';
-import { roundErrorString, roundValueString } from '@/shared/algorithm/rounding';
-import ProcessingInputText from '@/components/ProcessingInputText.vue';
+  import { AsciiFormulaWriter } from '@/shared/math/formulas/writers/ascii';
+  import FormulaView from '@/components/math/FormulaView.vue';
+  import { roundErrorString, roundValueString } from '@/shared/math/rounding';
+  import ProcessingInputText from '@/components/ProcessingInputText.vue';
 
   const service = useIndirectError(); 
   

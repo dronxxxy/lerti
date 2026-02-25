@@ -1,6 +1,6 @@
 import Decimal from "decimal.js";
-import type Sample from "./sample";
-import { AlgorithmError } from "../error";
+import type Sample from "../sample";
+import { AlgorithmError } from "../../error";
 
 export type UTable = Record<number, Decimal>
 

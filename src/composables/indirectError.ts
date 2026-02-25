@@ -1,8 +1,8 @@
 import { AlgorithmError, throwAlgorithmError } from "@/shared/error";
-import { DerivativeContext, ExecutionContext, type Formula } from "@/shared/formulas/formula";
-import { VariableFormula } from "@/shared/formulas/impl/variable";
-import { DefaultOptimisator } from "@/shared/formulas/optimisators/default";
-import { parseFormulaFromLatex } from "@/shared/formulas/parse/latex";
+import { DerivativeContext, ExecutionContext, type Formula } from "@/shared/math/formulas/formula";
+import { VariableFormula } from "@/shared/math/formulas/impl/variable";
+import { DefaultOptimisator } from "@/shared/math/formulas/optimisators/default";
+import { parseFormulaFromLatex } from "@/shared/math/formulas/parse/latex";
 import Decimal from "decimal.js";
 import { computed, reactive, ref, watch } from "vue";
 
