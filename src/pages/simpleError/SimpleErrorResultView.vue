@@ -19,7 +19,7 @@ import HorizontalCenter from '@/components/basics/HorizontalCenter.vue';
 </script>
 
 <template>
-  <Accordion v-model="opened" multiple>
+  <Accordion class="w-[100%]" v-model="opened" multiple>
     <AccordionPanel :value="RUDE_CLEANING">
       <AccordionHeader>
         <div class="flex flex-row items-center gap-2">

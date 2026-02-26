@@ -14,7 +14,7 @@
 <template>
   <Card>
     <template #title>
-      <div class="flex flex-row justify-between">
+      <div class="flex flex-row justify-between text-center">
         {{ props.title }}
         <DocsButton
           v-if="props.docs"
@@ -24,7 +24,7 @@
       </div>
     </template>
     <template #content>
-      <div class="flex flex-col gap-5 items-stretch pt-2">
+      <div class="flex flex-col gap-5 items-center pt-2">
         <slot></slot>
       </div>
     </template>

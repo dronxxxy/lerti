@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import useSimpleError from '@/composables/simpleError';
   import SimpleErrorResultView from './SimpleErrorResultView.vue';
-  import { Button, Card, Accordion, AccordionHeader, AccordionPanel, AccordionContent, Badge, InputGroup, InputGroupAddon } from 'primevue'
+  import { Button, Accordion, AccordionHeader, AccordionPanel, AccordionContent, Badge, InputGroup, InputGroupAddon } from 'primevue'
   import { MAX_FRACTION_DIGITS } from '@/shared/constants';
   import AdditionalTableInput from './AdditionalTableInput.vue';
   import { U_TABLE_95 } from '@/shared/math/simpleError/cleanMisses';
@@ -11,8 +11,7 @@
   import SampleInput from '@/components/math/SampleInput.vue';
   import InputDecimal from '@/components/basics/InputDecimal.vue';
   import ContentCard from '@/components/basics/ContentCard.vue';
-import FormulaView from '@/components/math/FormulaView.vue';
-import InlineFormulaView from '@/components/math/InlineFormulaView.vue';
+  import InlineFormulaView from '@/components/math/InlineFormulaView.vue';
 
   const service = useSimpleError()
 </script>
@@ -25,7 +24,7 @@ import InlineFormulaView from '@/components/math/InlineFormulaView.vue';
     >
       <SampleInput v-model="service.values.value"/>
 
-      <div class="flex flex-row items-center gap-2">
+      <div class="flex flex-row items-center w-[100%] gap-2">
         <InputGroup>
           <InputGroupAddon>
             <p>
@@ -40,7 +39,7 @@ import InlineFormulaView from '@/components/math/InlineFormulaView.vue';
         </InputGroup>
         <DocsButton :page="26" module="2.8." />
       </div>
-      <Accordion multiple>
+      <Accordion class="w-[100%]" multiple>
         <AccordionPanel value="ADDITIONAL_US">
           <AccordionHeader>
             <div class="flex flex-row items-center gap-2">
