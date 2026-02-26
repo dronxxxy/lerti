@@ -4,6 +4,9 @@
   import { ref } from 'vue';
   import DocsButton from '@/components/basics/DocsButton.vue';
   import type { CalculationResult } from '@/shared/math/simpleError/main';
+import ErrorValue from '@/components/math/ErrorValue.vue';
+import InlineFormulaView from '@/components/math/InlineFormulaView.vue';
+import HorizontalCenter from '@/components/basics/HorizontalCenter.vue';
 
   const props = defineProps<{
     result: CalculationResult 
@@ -25,7 +28,7 @@
         </div>
       </AccordionHeader>
       <AccordionContent>
-        <div v-for="(stage, stageIndex) in props.result.rudeCleaning">
+        <template v-for="(stage, stageIndex) in props.result.rudeCleaning">
           <Divider v-if="stageIndex != 0"></Divider>
           <div v-if="stage.missSide === null">
             <p>Грубых промахов {{ stageIndex == 0 ? "" : "больше" }} нет, выборка очищена!</p>
@@ -36,32 +39,30 @@
                 right: "справа",
                 left: "слева",
               }[stage.missSide] }}:
-              x<sub>{{ { right: stage.sample.length - 1, left: 1, }[stage.missSide] }}</sub> -
-                x<sub>{{ { right: stage.sample.length - 2, left: 0, }[stage.missSide] }}</sub> &approx;
-              {{stage.allowedDiff}} {{ ">" }} u &middot; R = {{stage.u}} &middot; {{ {
-                right: stage.rightDiff,
-                left: stage.leftDiff,
-              }[stage.missSide] }} &approx; {{ stage.u.mul({
-                right: stage.rightDiff,
-                left: stage.leftDiff,
-              }[stage.missSide]) }}
+              <InlineFormulaView>
+                x_{{ {right: stage.sample.length - 1, left: 1, }[stage.missSide] }} -
+                  x_{{ { right: stage.sample.length - 2, left: 0, }[stage.missSide] }} \approx
+                {{stage.allowedDiff}} {{ ">" }} u \cdot R = {{stage.u}} \cdot {{ {
+                  right: stage.rightDiff,
+                  left: stage.leftDiff,
+                }[stage.missSide] }} \approx {{ stage.u.mul({
+                  right: stage.rightDiff,
+                  left: stage.leftDiff,
+                }[stage.missSide]) }}
+              </InlineFormulaView>
             </p>
           </div>
-          <div class="w-1/1 flex flex-col items-center mt-3">
-            <SampleView
-              :danger="stage.missSide ? {
-                left: [0, 1],
-                right: [stage.sample.length - 1, stage.sample.length - 2],
-              }[stage.missSide] : []"
-              :success="stage.missSide === null"
-              :sample="stage.sample"
-            />
-          </div>
-       </div>
+          <SampleView
+            :danger="stage.missSide ? {
+              left: [0, 1],
+              right: [stage.sample.length - 1, stage.sample.length - 2],
+            }[stage.missSide] : []"
+            :success="stage.missSide === null"
+            :sample="stage.sample"
+          />
+        </template>
       </AccordionContent>
     </AccordionPanel>
   </Accordion>
-  <div class="p-3 text-center">
-    <p class="text-2xl mt-3">Значение x &approx; <b>{{ props.result.value }} &plusmn; {{ props.result.error }}</b></p>
-  </div>
+  <ErrorValue :value="props.result.value" :error="props.result.error" var="x" />
 </template>

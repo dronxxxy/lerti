@@ -4,6 +4,7 @@
   import { ref } from 'vue';
   import DocsButton from '@/components/basics/DocsButton.vue';
   import InputDecimal from '@/components/basics/InputDecimal.vue';
+import InlineFormulaView from '@/components/math/InlineFormulaView.vue';
 
   const model = defineModel<Record<number, Decimal>>({
     default: {}
@@ -31,13 +32,13 @@
     <AccordionPanel value="0">
       <AccordionHeader>
         <div class="flex flex-row items-center gap-2">
-          <span>Стандартные значения при P = 95%</span>
+          <span>Стандартные значения при <InlineFormulaView>P = 95 \%</InlineFormulaView></span>
           <DocsButton :page="75" />
         </div>
       </AccordionHeader>
       <AccordionContent>
         <DataTable :value="Object.entries(props.defaultTable).map(([n, u]) => ({ n, u }))">
-          <Column field="n" header="Длина выборки N"></Column>
+          <Column field="n" header="Длина выборки"></Column>
           <Column field="u" header="Значение"></Column>
         </DataTable>
       </AccordionContent>

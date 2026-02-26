@@ -4,6 +4,7 @@
   import { computed, onMounted, ref } from 'vue';
   import InputDecimal from '../basics/InputDecimal.vue';
   import { SAMPLE_INPUT_WIDTH } from '@/shared/constants';
+  import InlineFormulaView from './InlineFormulaView.vue';
 
   const model = defineModel<Decimal[]>({
     default: [0, 0, 0, 0, 0].map((e) => new Decimal(e))
@@ -33,7 +34,7 @@
           v-model="model[(rowId - 1) * rowSize + (columnId - 1)]!"
           placeholder="0"
         />
-        <label>Элемент x<sub>{{(rowId - 1) * rowSize + (columnId - 1)}}</sub></label>
+        <label>Элемент <InlineFormulaView>x_{{(rowId - 1) * rowSize + (columnId - 1)}}</InlineFormulaView></label>
       </IftaLabel>
       <InputGroupAddon v-else class="sample-cell"> &ndash; </InputGroupAddon>
     </template>

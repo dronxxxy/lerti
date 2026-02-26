@@ -9,7 +9,7 @@ export default defineConfig({
     vue({
       template: {
         compilerOptions: {
-          isCustomElement: (tag) => ['math-field', 'math-div'].includes(tag),
+          isCustomElement: (tag) => ['math-field', 'math-div', 'math-span'].includes(tag),
         },
       },
     }),

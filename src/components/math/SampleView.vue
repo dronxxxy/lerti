@@ -13,7 +13,7 @@
 </script>
 
 <template>
-  <div class="flex flex-row gap-3">
+  <div class="flex flex-row gap-3 my-3 justify-center">
     <Badge
       size="xlarge"
       :severity="danger.includes(i) ? 'danger' : defaultColor"
