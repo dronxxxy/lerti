@@ -1,27 +1,18 @@
 <script setup lang="ts">
   import CardList from '@/components/CardList.vue';
-  import { DataTable, Column, Button, AccordionPanel, AccordionHeader, Accordion, AccordionContent, InputGroup, InputGroupAddon, InputNumber, Badge } from 'primevue';
+  import { DataTable, Column, Button, AccordionPanel, AccordionHeader, Accordion, AccordionContent, InputGroup, InputGroupAddon, InputNumber, Badge, TabStyle } from 'primevue';
   import FormulaInput from '@/components/math/FormulaInput.vue';
-  import useIndirectError from '@/composables/indirectError';
-  import { computed, ref } from 'vue';
+  import useIndirectErrorCalculator from '@/composables/indirectErrorCalculator';
+  import { computed } from 'vue';
   import { AsciiFormulaWriter } from '@/shared/math/formulas/writers/ascii';
   import FormulaView from '@/components/math/FormulaView.vue';
-  import ProcessingInputText from '@/components/ProcessingInputText.vue';
   import ContentCard from '@/components/basics/ContentCard.vue';
   import ErrorValue from '@/components/math/ErrorValue.vue';
+  import InputDecimal from '@/components/basics/InputDecimal.vue';
+import VarTableEditor from './VarTableEditor.vue';
 
-  const service = useIndirectError(); 
+  const service = useIndirectErrorCalculator(); 
   
-  const tableLengthInput = ref<number>(service.table.getLength());
-
-  const updateTableLength = () => {
-    const val = tableLengthInput.value;
-    if (!isNaN(val) && val >= 1) {
-      service.table.setLength(val);
-    }
-    tableLengthInput.value = service.table.getLength();
-  };
-
   const result = computed(() => {
     const result = service.result.value;
     if (!result) return null;
@@ -55,55 +46,8 @@
         {{ service.error.value.description }}
       </Badge>
 
-      <InputGroup>
-        <InputGroupAddon>
-          Длина выборки:
-        </InputGroupAddon>
-        <InputNumber
-          v-model="tableLengthInput" 
-          @blur="updateTableLength"
-          @focusout="updateTableLength"
-          @keyup.enter="updateTableLength"
-        />
-      </InputGroup>
+      <VarTableEditor :table="service.table" />
 
-      <DataTable 
-        v-if="service.table.variables.length > 0"
-        class="w-[100%]"
-        :value="service.table.variables" 
-        scrollable
-        scrollDirection="horizontal"
-      >
-        <Column field="name" header="Переменная" class="w-[100px]">
-          <template #body="{ data }">
-            <FormulaView :value="data.name" />
-          </template>
-        </Column>
-
-        <Column field="error" header="Погрешность">
-          <template #body="{ data, index }">
-            <ProcessingInputText 
-              class="w-[100px]"
-              :value="data.error.toString()"
-              @update="(val) => service.table.setVariableError(data.name, val ?? '')"
-            />
-          </template>
-        </Column>
-
-        <Column 
-          v-for="i in service.table.getLength()" 
-          :key="i"
-          :header="`№${i}`"
-        >
-          <template #body="{ data }">
-            <ProcessingInputText
-              class="w-[100px]"
-              :value="data.values[i - 1].toString()"
-              @update="(val) => service.table.setVariableValue(data.name, i - 1, val ?? '')"
-            />
-          </template>
-        </Column>
-      </DataTable>
       <Button :disabled="!service.canProcess.value" @click="service.process">Посчитать</Button>
     </ContentCard>
 

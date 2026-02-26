@@ -4,12 +4,8 @@ import { ConstantNumberFormula } from "./constant";
 import type { FormulaWriter } from "../writer";
 
 export class VariableFormula extends Formula {
-  constructor(private name: string) {
+  constructor(public readonly name: string) {
     super();
-  }
-
-  public getVariableName(): string {
-    return this.name;
   }
 
   public execute(context: ExecutionContext): Decimal {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import useSimpleError from '@/composables/simpleError';
+  import useSimpleErrorCalculator from '@/composables/simpleErrorCalculator';
   import SimpleErrorResultView from './SimpleErrorResultView.vue';
   import { Button, Accordion, AccordionHeader, AccordionPanel, AccordionContent, Badge, InputGroup, InputGroupAddon } from 'primevue'
   import { MAX_FRACTION_DIGITS } from '@/shared/constants';
@@ -13,7 +13,7 @@
   import ContentCard from '@/components/basics/ContentCard.vue';
   import InlineFormulaView from '@/components/math/InlineFormulaView.vue';
 
-  const service = useSimpleError()
+  const service = useSimpleErrorCalculator()
 </script>
 
 <template>

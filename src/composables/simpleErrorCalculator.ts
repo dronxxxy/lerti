@@ -3,10 +3,10 @@ import Sample from "@/shared/math/sample";
 import { catchAlgorithmError } from "@/shared/error";
 import Decimal from "decimal.js";
 import { ref } from "vue";
-import type { CalculationResult } from "@/shared/math/simpleError/main";
-import simpleErrorCalculate from "@/shared/math/simpleError/main";
+import type { CalculationResult } from "@/shared/math/simpleError";
+import simpleErrorCalculate from "@/shared/math/simpleError";
 
-export default function useSimpleError() {
+export default function useSimpleErrorCalculator() {
   const values = ref<Decimal[]>([0, 0, 0, 0, 0].map((e) => new Decimal(e)));
   const additionalUs = ref<Record<number, Decimal>>({});
   const additionalTs = ref<Record<number, Decimal>>({});

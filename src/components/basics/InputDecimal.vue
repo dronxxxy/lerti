@@ -10,7 +10,7 @@
   const reset = () => textValue.value = model.value.toString();
 
   watch(textValue, (value) => {
-    if (isNaN(Number(value))) return;
+    if (value === '' || isNaN(Number(value))) return;
     model.value = new Decimal(value);
   })
 </script>

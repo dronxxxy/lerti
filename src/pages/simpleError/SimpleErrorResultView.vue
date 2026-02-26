@@ -3,7 +3,7 @@
   import SampleView from '@/components/math/SampleView.vue';
   import { ref } from 'vue';
   import DocsButton from '@/components/basics/DocsButton.vue';
-  import type { CalculationResult } from '@/shared/math/simpleError/main';
+  import type { CalculationResult } from '@/shared/math/simpleError';
 import ErrorValue from '@/components/math/ErrorValue.vue';
 import InlineFormulaView from '@/components/math/InlineFormulaView.vue';
 import HorizontalCenter from '@/components/basics/HorizontalCenter.vue';
