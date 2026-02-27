@@ -3,36 +3,81 @@
   import { Card } from 'primevue'
   import useMinSquareMethod from '@/models/approxMinSquare';
   import { computed, watch } from 'vue'
-  import { Line } from 'vue-chartjs'
-  import { Chart as ChartJS, Title, Tooltip, Legend, LineElement, CategoryScale, LinearScale, PointElement } from 'chart.js'
+  import { Chart } from 'vue-chartjs'
+  import { Chart as ChartJS, Title, Tooltip, Legend, LineElement, CategoryScale, LinearScale, PointElement, type ChartData, type ChartDataset } from 'chart.js'
 
   ChartJS.register(Title, Tooltip, Legend, LineElement, CategoryScale, LinearScale, PointElement)
 
   const service = useMinSquareMethod()
 
+  watch([() => service.xValues.value, () => service.yValues.value], () => {
+    if (service.xValues.value?.length > 1 && service.yValues.value?.length > 1) {
+      service.approximate(service.xValues.value, service.yValues.value, "linear")
+    }
+  }, { deep: true })
+
   const chartData = computed(() => {
-    const xVals = service.xValues.value || []
-    const yVals = service.yValues.value || []
+    const xs= service.xValues.value || []
+    const ys=service.yValues.value || []
+
+    const points = xs.map((x, i) => ({ x, y: ys[i]! }));
+    points.sort((a, b) => a.x - b.x);
+
+    const xVals = points.map((p) => p.x)
+    const yVals = points.map((p) => p.y)
+
     
-    const minLength = Math.min(xVals.length, yVals.length)
-    
-    return {
-      labels: xVals.slice(0, minLength).map((val) => val.toFixed(2)),
-      datasets: [
+    const datab = ()=>{
+      const v=service.result.value;
+      if (v!=null){
+        const kk = v.k.toNumber();
+        const bb = v.b.toNumber();
+        return [
         {
+          type:'scatter',
           label: 'Экспериментальные точки',
-          data: yVals.slice(0, minLength),
+          data: yVals.map((y, i) => ({ y, x: xVals[i]! })),
           borderColor: 'rgb(75, 192, 192)',
           backgroundColor: 'rgba(75, 192, 192, 0.2)',
           tension: 0.1,
           pointRadius: 5,
           pointHoverRadius: 8
+        } , 
+        {
+          type:'line',
+          label: 'График аппроксимации (МНК)',
+          data: xVals.map((val)=>kk*val+bb),
+          borderColor: 'rgb(255, 69, 0)',
+          backgroundColor: 'rgba(255, 69, 0, 0.2)',
+          tension: 0.1,
+          pointRadius: 5,
+          pointHoverRadius: 8
         }
-      ]
+      ] satisfies ChartDataset[]
+      }
+      else{
+        return [
+        {
+          type:'scatter',
+          label: 'Экспериментальные точки',
+          data: yVals.map((y, i) => ({ y, x: xVals[i]! })),
+          borderColor: 'rgb(75, 192, 192)',
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          tension: 0.1,
+          pointRadius: 5,
+          pointHoverRadius: 8
+        } ] satisfies ChartDataset[]
+      }
+    }
+
+    const minLength = Math.min(xVals.length, yVals.length)
+    return <ChartData>{
+      labels: xVals.slice(0, minLength).map((val) => val.toFixed(2)),
+      datasets: datab()
     }
   })
 
-  const chartOptions = computed(() => ({
+  const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
@@ -53,58 +98,28 @@
         title: {
           display: true,
           text: 'X значения'
-        },
-        grid: {
-          display: true
         }
       },
       y: {
         title: {
           display: true,
           text: 'Y значения'
-        },
-        grid: {
-          display: true
         }
       }
     }
-  }))
+  }
 
   const hasData = computed(() => {
     const xVals = service.xValues.value || []
     const yVals = service.yValues.value || []
-    return xVals.length > 0 && yVals.length > 0 && Math.min(xVals.length, yVals.length) > 0
+    return xVals.length > 0 && yVals.length > 0
   })
-
 
   const pairsCount = computed(() => {
     const xVals = service.xValues.value || []
     const yVals = service.yValues.value || []
     return Math.min(xVals.length, yVals.length)
   })
-
-
-  const xValues = computed({
-    get: () => service.xValues.value || [],
-    set: (value) => { 
-      service.xValues.value = value
-      //МНК
-      service.approximate(service.xValues.value, service.yValues.value, "linear")
-    }
-  })
-
-  const yValues = computed({
-    get: () => service.yValues.value || [],
-    set: (value) => { 
-      service.yValues.value = value
-      // МНК
-      service.approximate(service.xValues.value, service.yValues.value, "linear")
-    }
-  })
-
-  watch([() => service.xValues.value, () => service.yValues.value], () => {
-    service.approximate(service.xValues.value, service.yValues.value, "linear")
-  }, { deep: true })
 </script>
 
 <template>
@@ -122,48 +137,46 @@
         <template #content>
           <TableForApprox 
             type="both" 
-            v-model:x="xValues" 
-            v-model:y="yValues" 
+            v-model:x="service.xValues.value" 
+            v-model:y="service.yValues.value" 
           />
         </template>
       </Card>
 
       <Card v-if="hasData">
         <template #title>
-          <div class="flex flex-row justify-between">
-            <span>График зависимости Y = f(X)</span>
-          </div>
+          <span>График аппроксимации</span>
         </template>
         <template #content>
           <div style="height: 400px; width: 100%;">
-            <Line :data="chartData" :options="chartOptions" />
+            <Chart type="scatter" :data="chartData" :options="chartOptions" />
           </div>
         </template>
       </Card>
 
-      <Card v-if="service.result.value">
+      <Card v-if="service.result.value && service.result.value.er!=true">
         <template #title>
           <span>Результаты аппроксимации</span>
         </template>
         <template #content>
           <div class="grid grid-cols-2 gap-4">
-            <div class="p-3 bg-blue-50 rounded">
-              <div class="text-sm text-gray-600">Коэффициенты</div>
+            <div>
+              <div style="color: rgb(75, 192, 192);">Коэффициенты</div>
               <div class="font-mono text-lg">
-                a = {{ service.result.value.k?.toFixed(4) }}<br>
+                k = {{ service.result.value.k?.toFixed(4) }}<br>
                 b = {{ service.result.value.b?.toFixed(4) }}
               </div>
             </div>
-            <div class="p-3 bg-green-50 rounded">
-              <div class="text-sm text-gray-600">Качество аппроксимации</div>
-              <div class="font-mono text-lg">
-                R2 = {{ service.result.value.Squared?.toFixed(4) }}
+            <div>
+              <div style="color: rgb(75, 192, 192);">Качество аппроксимации</div>
+              <div class="font-mono text-gray-600">
+                R² = {{ service.result.value.Squared?.toFixed(4) }}
               </div>
             </div>
           </div>
           
-          <div class="mt-3 p-3 bg-gray-50 rounded">
-            <div class="text-sm text-gray-600">Уравнение</div>
+          <div class="mt-4 p-3 border border-green-200 rounded">
+            <div style="color: rgb(75, 192, 192);">Уравнение</div>
             <div class="font-mono text-lg">
               y = {{ service.result.value.k?.toFixed(4) }}x + {{ service.result.value.b?.toFixed(4) }}
             </div>
@@ -173,7 +186,7 @@
       
       <Card v-else-if="service.xValues.value?.length > 0 || service.yValues.value?.length > 0">
         <template #content>
-          <div class="text-center text-gray-500 p-4">
+          <div style="color: rgb(75, 192, 192);">
             Недостаточно данных для аппроксимации. 
             Требуется минимум 2 пары точек. (Сейчас {{ pairsCount }} пар)
           </div>
