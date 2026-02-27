@@ -37,8 +37,8 @@
           type:'scatter',
           label: 'Экспериментальные точки',
           data: yVals.map((y, i) => ({ y, x: xVals[i]! })),
-          borderColor: 'rgb(75, 192, 192)',
-          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          borderColor: 'rgb(34, 197, 94)',
+          backgroundColor: 'rgba(34, 197, 94, 0.2)',
           tension: 0.1,
           pointRadius: 5,
           pointHoverRadius: 8
@@ -61,8 +61,8 @@
           type:'scatter',
           label: 'Экспериментальные точки',
           data: yVals.map((y, i) => ({ y, x: xVals[i]! })),
-          borderColor: 'rgb(75, 192, 192)',
-          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          borderColor: 'rgb(34, 197, 94)',
+          backgroundColor: 'rgba(34, 197, 94, 0.2)',
           tension: 0.1,
           pointRadius: 5,
           pointHoverRadius: 8
@@ -161,22 +161,22 @@
         <template #content>
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <div style="color: rgb(75, 192, 192);">Коэффициенты</div>
+              <div style="color: rgb(34, 197, 94);">Коэффициенты</div>
               <div class="font-mono text-lg">
                 k = {{ service.result.value.k?.toFixed(4) }}<br>
                 b = {{ service.result.value.b?.toFixed(4) }}
               </div>
             </div>
             <div>
-              <div style="color: rgb(75, 192, 192);">Качество аппроксимации</div>
+              <div style="color: rgb(34, 197, 94);">Качество аппроксимации</div>
               <div class="font-mono text-gray-600">
                 R² = {{ service.result.value.Squared?.toFixed(4) }}
               </div>
             </div>
           </div>
           
-          <div class="mt-4 p-3 border border-green-200 rounded">
-            <div style="color: rgb(75, 192, 192);">Уравнение</div>
+          <div>
+            <div style="color: rgb(34, 197, 94);">Уравнение</div>
             <div class="font-mono text-lg">
               y = {{ service.result.value.k?.toFixed(4) }}x + {{ service.result.value.b?.toFixed(4) }}
             </div>
@@ -186,7 +186,7 @@
       
       <Card v-else-if="service.xValues.value?.length > 0 || service.yValues.value?.length > 0">
         <template #content>
-          <div style="color: rgb(75, 192, 192);">
+          <div style="color: rgb(34, 197, 94);">
             Недостаточно данных для аппроксимации. 
             Требуется минимум 2 пары точек. (Сейчас {{ pairsCount }} пар)
           </div>
