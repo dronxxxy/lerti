@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import CardList from '@/components/CardList.vue';
-  import { DataTable, Column, Button, AccordionPanel, AccordionHeader, Accordion, AccordionContent, InputGroup, InputGroupAddon, InputNumber, Badge, TabStyle } from 'primevue';
+  import { Button, AccordionPanel, AccordionHeader, Accordion, AccordionContent, InputGroup, InputGroupAddon, InputNumber, Badge, TabStyle } from 'primevue';
   import FormulaInput from '@/components/math/FormulaInput.vue';
   import useIndirectErrorCalculator from '@/composables/indirectErrorCalculator';
   import { computed } from 'vue';
@@ -8,8 +8,7 @@
   import FormulaView from '@/components/math/FormulaView.vue';
   import ContentCard from '@/components/basics/ContentCard.vue';
   import ErrorValue from '@/components/math/ErrorValue.vue';
-  import InputDecimal from '@/components/basics/InputDecimal.vue';
-import VarTableEditor from './VarTableEditor.vue';
+  import VarTableEditor from './VarTableEditor.vue';
 
   const service = useIndirectErrorCalculator(); 
   
@@ -56,7 +55,7 @@ import VarTableEditor from './VarTableEditor.vue';
         <AccordionPanel value="DERIVATIVES">
           <AccordionHeader>Производные</AccordionHeader>
           <AccordionContent>
-            <FormulaView v-for="derivative of result.derivatives" :value="derivative" />
+            <FormulaView format="ascii-math" v-for="derivative of result.derivatives" :value="derivative" />
           </AccordionContent>
         </AccordionPanel>
         <AccordionPanel value="SAMPLES">
@@ -65,13 +64,10 @@ import VarTableEditor from './VarTableEditor.vue';
 
             <Accordion multiple>
               <template v-for="(sample, sampleId) of result.samples">
-                <AccordionPanel :value="sampleId">
-                  <AccordionHeader>Выборка №{{ sampleId + 1 }}</AccordionHeader>
-                  <AccordionContent>
-                    <FormulaView :value="sample.result" />
-                    <FormulaView :value="sample.error" />
-                  </AccordionContent>
-                </AccordionPanel>
+                <p><b>Выборка №{{ sampleId + 1 }}</b>:
+                  <FormulaView format="ascii-math" :value="sample.result" />
+                  <FormulaView format="ascii-math" :value="sample.error" />
+                </p>
               </template>
             </Accordion>
 

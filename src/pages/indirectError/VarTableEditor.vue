@@ -1,8 +1,9 @@
 <script setup lang="ts">
   import InputDecimal from '@/components/basics/InputDecimal.vue';
-import FormulaView from '@/components/math/FormulaView.vue';
-import type useVarTableInput from '@/composables/varTableInput';
-import { Column, DataTable, InputGroup, InputGroupAddon, InputNumber } from 'primevue';
+  import FormulaView from '@/components/math/FormulaView.vue';
+import InlineFormulaView from '@/components/math/InlineFormulaView.vue';
+  import type useVarTableInput from '@/composables/varTableInput';
+  import { Column, DataTable, InputGroup, InputGroupAddon, InputNumber } from 'primevue';
 
   const props = defineProps<{
     table: ReturnType<typeof useVarTableInput>
@@ -21,10 +22,11 @@ import { Column, DataTable, InputGroup, InputGroupAddon, InputNumber } from 'pri
     :value="table.variables" 
     scrollable
     scrollDirection="horizontal"
+    size="small"
   >
-    <Column field="name" header="Переменная" class="w-[100px]">
+    <Column field="name" header="Переменная">
       <template #body="{ data }">
-        <FormulaView :value="data.name" />
+        <InlineFormulaView :value="data.name" />
       </template>
     </Column>
 
@@ -32,7 +34,7 @@ import { Column, DataTable, InputGroup, InputGroupAddon, InputNumber } from 'pri
       <template #body="{ data }">
         <InputDecimal
           v-model="data.error"
-          class="w-[100px]"
+          class="w-[100%]"
         />
       </template>
     </Column>
@@ -45,7 +47,7 @@ import { Column, DataTable, InputGroup, InputGroupAddon, InputNumber } from 'pri
       <template #body="{ data }">
         <InputDecimal
           v-model="data.values[i - 1]"
-          class="w-[100px]"
+          class="w-[100%] m-0"
         />
       </template>
     </Column>
