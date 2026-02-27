@@ -1,7 +1,7 @@
 <script setup lang="ts">
-  import TableForApprox from '@/components/TableForApprox.vue';
+  import TableForApprox from './TableForApprox.vue';
   import { Card } from 'primevue'
-  import useMinSquareMethod from '@/models/approxMinSquare';
+  import useMinSquareMethod from '@/composables/approxMinSquare';
   import { computed, watch } from 'vue'
   import { Chart } from 'vue-chartjs'
   import { Chart as ChartJS, Title, Tooltip, Legend, LineElement, CategoryScale, LinearScale, PointElement, type ChartData, type ChartDataset } from 'chart.js'
