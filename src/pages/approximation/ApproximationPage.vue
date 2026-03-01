@@ -5,6 +5,7 @@
   import { computed, watch } from 'vue'
   import { Chart } from 'vue-chartjs'
   import { Chart as ChartJS, Title, Tooltip, Legend, LineElement, CategoryScale, LinearScale, PointElement, type ChartData, type ChartDataset } from 'chart.js'
+  import InlineFormulaView from '@/components/math/InlineFormulaView.vue';
 
   ChartJS.register(Title, Tooltip, Legend, LineElement, CategoryScale, LinearScale, PointElement)
 
@@ -163,14 +164,14 @@
             <div>
               <div style="color: rgb(34, 197, 94);">Коэффициенты</div>
               <div class="font-mono text-lg">
-                k = {{ service.result.value.k?.toFixed(4) }}<br>
-                b = {{ service.result.value.b?.toFixed(4) }}
+                <InlineFormulaView :value="`k = ${service.result.value.k?.toFixed(4)}`"/><br>
+                <InlineFormulaView :value="`b = ${service.result.value.b?.toFixed(4)}`"/>
               </div>
             </div>
             <div>
               <div style="color: rgb(34, 197, 94);">Качество аппроксимации</div>
-              <div class="font-mono text-gray-600">
-                R² = {{ service.result.value.Squared?.toFixed(4) }}
+              <div class="font-mono text-lg">
+                <InlineFormulaView :value="`R^2 = ${service.result.value.Squared?.toFixed(4)}`"/>
               </div>
             </div>
           </div>
@@ -178,7 +179,7 @@
           <div>
             <div style="color: rgb(34, 197, 94);">Уравнение</div>
             <div class="font-mono text-lg">
-              y = {{ service.result.value.k?.toFixed(4) }}x + {{ service.result.value.b?.toFixed(4) }}
+              <InlineFormulaView :value="`y = ${service.result.value.k?.toFixed(4)} \\cdot x + ${service.result.value.b?.toFixed(4)}`"/>
             </div>
           </div>
         </template>
