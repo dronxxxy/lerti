@@ -1,11 +1,10 @@
 import { expect, test } from "vitest";
 import { parseFormulaFromAscii } from "../parse/ascii"
-import { AsciiFormulaWriter } from "../writers/ascii";
 
 function testConvertion(source: string) {
   test(`convert: ${source}`, () => {
     const formula = parseFormulaFromAscii(source);
-    const result = formula.toString(new AsciiFormulaWriter());
+    const result = formula.toLatex();
     expect(result).toBe(source);
   })
 }

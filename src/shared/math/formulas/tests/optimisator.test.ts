@@ -1,7 +1,6 @@
 import { expect, test } from "vitest";
 import type { FormulaOptimisator } from "../optimisator";
 import { parseFormulaFromAscii } from "../parse/ascii";
-import { AsciiFormulaWriter } from "../writers/ascii";
 import { AddCompressOptimisator, MultiplyCompressOptimisator } from "../optimisators/compress";
 import { DefaultOptimisator } from "../optimisators/default";
 import { MultiplyUnaryOptimisator } from "../optimisators/multiplyUnary";
@@ -13,7 +12,7 @@ function testOptimisator(source: string, output: string, optimisator: FormulaOpt
   test(`optimisator: ${source} ==> ${output}`, () => {
     const formula = parseFormulaFromAscii(source);
     const optimised = optimisator.optimise(formula);
-    expect(optimised?.toString(new AsciiFormulaWriter()) ?? source).toBe(output);
+    expect(optimised?.toLatex() ?? source).toBe(output);
   })
 }
 

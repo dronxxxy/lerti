@@ -6,7 +6,7 @@ import { ConstantNumberFormula } from "../impl/constant";
 import Decimal from "decimal.js";
 import { VariableFormula } from "../impl/variable";
 import { PowFormula } from "../impl/pow";
-import { LnFormula } from "../impl/ln";
+import { CosFormula, LnFormula, SinFormula } from "../impl/ln";
 import { UnaryMinusFormula } from "../impl/unary";
 
 export class InvalidLatexException extends AlgorithmError {
@@ -98,6 +98,8 @@ function astNodeParseFunction(node: Node): Formula {
     );
   const Function = {
     "ln": LnFormula,
+    "sin": SinFormula,
+    "cos": CosFormula,
   }[node.name!];
   if (Function === undefined)
     throw new UnknownLatexFeature(

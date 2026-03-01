@@ -1,7 +1,6 @@
 import Decimal from "decimal.js";
 import { DerivativeContext, ExecutionContext, Formula, FormulaLevel } from "../formula";
 import { ConstantNumberFormula } from "./constant";
-import type { FormulaWriter } from "../writer";
 
 export class VariableFormula extends Formula {
   constructor(public readonly name: string) {
@@ -12,8 +11,8 @@ export class VariableFormula extends Formula {
     return context.getVariable(this.name);
   }
 
-  public write(writer: FormulaWriter): void {
-    writer.writeVariable(this.name);
+  public toLatex(): string {
+    return this.name.length == 1 ? this.name : `\\${this.name}`;
   }
 
   public buildDerivative(context: DerivativeContext): Formula | null {

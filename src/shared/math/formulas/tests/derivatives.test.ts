@@ -1,13 +1,12 @@
 import { expect, test } from "vitest";
 import { DerivativeContext } from "../formula";
-import { AsciiFormulaWriter } from "../writers/ascii";
 import { parseFormulaFromAscii } from "../parse/ascii";
 
 function testDerivative(source: string, output: string) {
   test(`derivative: ${source}`, () => {
     const formula = parseFormulaFromAscii(source);
     const derivative = formula.buildDerivative(new DerivativeContext("x"));
-    expect(derivative?.toString(new AsciiFormulaWriter()) ?? "0").toBe(output);
+    expect(derivative?.toLatex() ?? "0").toBe(output);
   })
 }
 

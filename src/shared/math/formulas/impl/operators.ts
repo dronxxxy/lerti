@@ -1,7 +1,6 @@
 import Decimal from "decimal.js";
 import { DerivativeContext, ExecutionContext, Formula, FormulaLevel } from "../formula";
 import { PowFormula } from "./pow";
-import { FormulaWriter } from "../writer";
 import { ConstantNumberFormula } from "./constant";
 import { UnaryMinusFormula } from "./unary";
 
@@ -23,14 +22,13 @@ export abstract class OperatorFormula extends Formula {
     this.right = mapper(this.right) ?? this.right;
   }
 
-  protected abstract writeOperator(writer: FormulaWriter): void;
+  protected abstract buildLatex(left: string, right: string): string;
   protected isRightSideHigher(): boolean { return false };
 
-  public write(writer: FormulaWriter): void {
-    const level = this.getLevel();
-    this.left.writePrioritized(writer, level);
-    this.writeOperator(writer);
-    this.right.writePrioritized(writer, level, this.isRightSideHigher());
+  public toLatex(): string {
+    const left = this.left.toLatexPrioritized(this.getLevel())
+    const right = this.right.toLatexPrioritized(this.getLevel())
+    return this.buildLatex(left, right);
   }
 }
 
@@ -49,8 +47,8 @@ export class AddOperatorFormula extends OperatorFormula {
     return left.plus(right);
   }
 
-  protected writeOperator(writer: FormulaWriter): void {
-    writer.writePlus();
+  protected buildLatex(left: string, right: string): string {
+    return `${left} + ${right}`;
   }
 
   public getLevel(): FormulaLevel {
@@ -79,8 +77,8 @@ export class SubtractOperatorFormula extends OperatorFormula {
     return left.minus(right);
   }
 
-  protected writeOperator(writer: FormulaWriter): void {
-    writer.writeMinus();
+  protected buildLatex(left: string, right: string): string {
+    return `${left} - ${right}`;
   }
 
   public getLevel(): FormulaLevel {
@@ -120,8 +118,9 @@ export class MultiplyOperatorFormula extends OperatorFormula {
     return left.mul(right);
   }
 
-  protected writeOperator(writer: FormulaWriter): void {
-    writer.writeMultiply();
+
+  protected buildLatex(left: string, right: string): string {
+    return `${left} \\cdot ${right}`;
   }
 
   public getLevel(): FormulaLevel {
@@ -165,8 +164,8 @@ export class DivideOperatorFormula extends OperatorFormula {
     return left.div(right);
   }
 
-  protected writeOperator(writer: FormulaWriter): void {
-    writer.writeDivide();
+  protected buildLatex(left: string, right: string): string {
+    return `\\frac ${left} ${right}`;
   }
 
   public getLevel(): FormulaLevel {
