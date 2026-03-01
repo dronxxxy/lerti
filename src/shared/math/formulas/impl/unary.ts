@@ -1,6 +1,5 @@
 import type Decimal from "decimal.js";
 import { DerivativeContext, ExecutionContext, Formula, FormulaLevel } from "../formula";
-import type { FormulaWriter } from "../writer";
 
 export class UnaryMinusFormula extends Formula {
   constructor (public inner: Formula) {
@@ -17,9 +16,8 @@ export class UnaryMinusFormula extends Formula {
     return this.inner.execute(context).negated();
   }
 
-  public write(writer: FormulaWriter): void {
-    writer.writeMinus();
-    this.inner.writePrioritized(writer, this.getLevel());
+  public toLatex(): string {
+    return  `- ${this.inner.toLatexPrioritized(FormulaLevel.POW)}`;
   }
 
   public getLevel(): FormulaLevel {

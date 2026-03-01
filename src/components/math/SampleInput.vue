@@ -34,7 +34,7 @@
           v-model="model[(rowId - 1) * rowSize + (columnId - 1)]!"
           placeholder="0"
         />
-        <label>Элемент <InlineFormulaView>x_{{(rowId - 1) * rowSize + (columnId - 1)}}</InlineFormulaView></label>
+        <label>Элемент <InlineFormulaView :value="`x_${(rowId - 1) * rowSize + (columnId - 1)}`" /></label>
       </IftaLabel>
       <InputGroupAddon v-else class="sample-cell"> &ndash; </InputGroupAddon>
     </template>

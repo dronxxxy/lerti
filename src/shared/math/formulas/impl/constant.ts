@@ -1,6 +1,5 @@
 import type Decimal from "decimal.js";
 import { DerivativeContext, ExecutionContext, Formula, FormulaLevel } from "../formula";
-import type { FormulaWriter } from "../writer";
 
 export class ConstantNumberFormula extends Formula {
   constructor(public value: Decimal) {
@@ -15,8 +14,8 @@ export class ConstantNumberFormula extends Formula {
     return this.value;
   }
 
-  public write(writer: FormulaWriter): void {
-    writer.writeNumber(this.value);
+  public toLatex(): string {
+    return this.value.toString();
   }
 
   public *getChildren(): IterableIterator<Formula> {}

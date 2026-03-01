@@ -10,12 +10,11 @@
     var: string,
   }>();
 
-  const error = computed(() => roundErrorString(props.error))
-  const value = computed(() => roundValueString(props.value, props.error))
+  const formula = computed(() => `${ props.var } \\approx ${roundValueString(props.value, props.error)} \\pm ${roundErrorString(props.error)}`)
 </script>
 
 <template>
   <div class="p-3 text-center">
-    <p class="text-2xl mt-3">Значение <InlineFormulaView>{{ props.var }} \approx {{ value }} \pm {{ error }}</InlineFormulaView></p>
+    <p class="text-2xl mt-3">Значение <InlineFormulaView :value="formula" /></p>
   </div>
 </template>

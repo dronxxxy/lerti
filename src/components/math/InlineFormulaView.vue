@@ -1,13 +1,11 @@
 <script setup lang="ts">
   const props = defineProps<{
-    value?: string,
-    format?: "ascii-math" | "latex"
+    value: string,
   }>()
 </script>
 
 <template>
-  <math-span :format="props.format ?? 'latex'" :key="props.value">
-    <slot v-if="value === undefined"></slot>
+  <math-span format="latex" :key="props.value">
     {{ props.value }}
   </math-span>
 </template>

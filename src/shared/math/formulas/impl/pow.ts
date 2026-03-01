@@ -1,7 +1,6 @@
 import Decimal from "decimal.js";
 import { DerivativeContext, ExecutionContext, Formula, FormulaLevel } from "../formula";
 import { MultiplyOperatorFormula } from "./operators";
-import type { FormulaWriter } from "../writer";
 import { LnFormula } from "./ln";
 
 export class PowFormula extends Formula {
@@ -31,11 +30,8 @@ export class PowFormula extends Formula {
     yield this.power;
   }
 
-  public write(writer: FormulaWriter): void {
-    const level = this.getLevel();
-    this.inner.writePrioritized(writer, level, true);
-    writer.writePow();
-    this.power.writePrioritized(writer, level);
+  public toLatex(): string {
+    return `${this.inner.toLatexPrioritized(FormulaLevel.POW)} ^ ${this.power.toLatexPrioritized()}`;
   }
 
   public equals(other: Formula): boolean {

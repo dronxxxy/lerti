@@ -3,7 +3,6 @@
 
   const props = defineProps<{
     value: string,
-    format?: "ascii-math" | "latex"
   }>()
 
   const element = ref();
@@ -11,7 +10,7 @@
 
 <template>
   <div class="w-[100%] flex flex-row justify-center my-3">
-    <math-div ref="element" :format="props.format ?? 'ascii-math'" :key="value">
+    <math-div ref="element" format="latex" :key="value">
       {{ value }}
     </math-div>
   </div>

@@ -4,11 +4,11 @@
   import FormulaInput from '@/components/math/FormulaInput.vue';
   import useIndirectErrorCalculator from '@/composables/indirectErrorCalculator';
   import { computed } from 'vue';
-  import { AsciiFormulaWriter } from '@/shared/math/formulas/writers/ascii';
   import FormulaView from '@/components/math/FormulaView.vue';
   import ContentCard from '@/components/basics/ContentCard.vue';
   import ErrorValue from '@/components/math/ErrorValue.vue';
   import VarTableEditor from './VarTableEditor.vue';
+  import { VariableFormula } from '@/shared/math/formulas/impl/variable';
 
   const service = useIndirectErrorCalculator(); 
   
@@ -17,17 +17,17 @@
     if (!result) return null;
     return {
       derivatives: Object.entries(result.partials)
-        .map(([varName, partial]) => `(df)/(d ${varName}) = ${ partial?.toString(new AsciiFormulaWriter()) ?? 0 }`),
+        .map(([varName, partial]) => `\\frac {df} {d${new VariableFormula(varName).toLatex()}} = ${ partial?.toLatex() ?? 0 }`),
       samples: result.samples.map((sample) => ({
         result: `f = ${sample.result.toFixed(2)}`,
-        error: `theta = sqrt(${
+        error: `\\theta = \\sqrt {${
               sample.derivatives
-                .map((derivative, i) => `(${derivative.toFixed(2)} * ${result.errors[i]!.toFixed(2)}) ^ 2`)
+                .map((derivative, i) => `\\left( ${derivative.toFixed(2)} \\cdot ${result.errors[i]!.toFixed(2)} \\right) ^ 2`)
                 .join(' + ')
-            }) = ${sample.error.toFixed(2)}`
+            }} = ${sample.error.toFixed(2)}`
       })),
-      result: `f = (${result.samples.map((sample) => sample.result.toFixed(2)).join('+')})/${result.samples.length} = ${result.average.toFixed(2)}`, 
-      error: `theta = sqrt(${result.samples.map((sample) => `${sample.error.toFixed(2)} ^ 2`).join('+')})/${result.samples.length} = ${result.error.toFixed(2)}`,
+      result: `f = \\frac { ${result.samples.map((sample) => sample.result.toFixed(2)).join('+')} } ${result.samples.length} = ${result.average.toFixed(2)}`, 
+      error: `\\theta = \\frac \\sqrt { ${result.samples.map((sample) => `${sample.error.toFixed(2)} ^ 2`).join('+')} } ${result.samples.length} = ${result.error.toFixed(2)}`,
       errorValue: result.error,
       resultValue: result.average,
     };
@@ -55,7 +55,7 @@
         <AccordionPanel value="DERIVATIVES">
           <AccordionHeader>Производные</AccordionHeader>
           <AccordionContent>
-            <FormulaView format="ascii-math" v-for="derivative of result.derivatives" :value="derivative" />
+            <FormulaView v-for="derivative of result.derivatives" :value="derivative" />
           </AccordionContent>
         </AccordionPanel>
         <AccordionPanel value="SAMPLES">
@@ -65,8 +65,8 @@
             <Accordion multiple>
               <template v-for="(sample, sampleId) of result.samples">
                 <p><b>Выборка №{{ sampleId + 1 }}</b>:
-                  <FormulaView format="ascii-math" :value="sample.result" />
-                  <FormulaView format="ascii-math" :value="sample.error" />
+                  <FormulaView :value="sample.result" />
+                  <FormulaView :value="sample.error" />
                 </p>
               </template>
             </Accordion>

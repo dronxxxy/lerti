@@ -1,12 +1,12 @@
 <script setup lang="ts">
   import { Divider, Accordion, AccordionContent, AccordionHeader, AccordionPanel } from 'primevue';
   import SampleView from '@/components/math/SampleView.vue';
-  import { ref } from 'vue';
+  import { computed, ref } from 'vue';
   import DocsButton from '@/components/basics/DocsButton.vue';
   import type { CalculationResult } from '@/shared/math/simpleError';
-import ErrorValue from '@/components/math/ErrorValue.vue';
-import InlineFormulaView from '@/components/math/InlineFormulaView.vue';
-import HorizontalCenter from '@/components/basics/HorizontalCenter.vue';
+  import ErrorValue from '@/components/math/ErrorValue.vue';
+  import InlineFormulaView from '@/components/math/InlineFormulaView.vue';
+  import HorizontalCenter from '@/components/basics/HorizontalCenter.vue';
 
   const props = defineProps<{
     result: CalculationResult 
@@ -16,6 +16,18 @@ import HorizontalCenter from '@/components/basics/HorizontalCenter.vue';
   const RESULT = "1"
 
   const opened = ref<string[]>([RESULT])
+
+  const formulas = computed(() => props.result.rudeCleaning.map((stage) => stage.missSide ? `
+    x_${{right: stage.sample.length - 1, left: 1, }[stage.missSide]} -
+      x_${ { right: stage.sample.length - 2, left: 0, }[stage.missSide] } \\approx
+    ${stage.allowedDiff} > u \\cdot R = ${stage.u} \\cdot ${ {
+      right: stage.rightDiff,
+      left: stage.leftDiff,
+    }[stage.missSide] } \\approx ${stage.u.mul({
+      right: stage.rightDiff,
+      left: stage.leftDiff,
+    }[stage.missSide])}
+  ` : undefined))
 </script>
 
 <template>
@@ -39,17 +51,7 @@ import HorizontalCenter from '@/components/basics/HorizontalCenter.vue';
                 right: "справа",
                 left: "слева",
               }[stage.missSide] }}:
-              <InlineFormulaView>
-                x_{{ {right: stage.sample.length - 1, left: 1, }[stage.missSide] }} -
-                  x_{{ { right: stage.sample.length - 2, left: 0, }[stage.missSide] }} \approx
-                {{stage.allowedDiff}} {{ ">" }} u \cdot R = {{stage.u}} \cdot {{ {
-                  right: stage.rightDiff,
-                  left: stage.leftDiff,
-                }[stage.missSide] }} \approx {{ stage.u.mul({
-                  right: stage.rightDiff,
-                  left: stage.leftDiff,
-                }[stage.missSide]) }}
-              </InlineFormulaView>
+              <InlineFormulaView :value="formulas[stageIndex]!" />
             </p>
           </div>
           <SampleView

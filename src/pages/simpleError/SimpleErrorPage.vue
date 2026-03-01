@@ -29,7 +29,7 @@
           <InputGroupAddon>
             <p>
               Приборная погрешность
-              <InlineFormulaView>\theta_x</InlineFormulaView>
+              <InlineFormulaView value="\theta_x" />
             </p>
           </InputGroupAddon>
           <InputDecimal
@@ -43,7 +43,7 @@
         <AccordionPanel value="ADDITIONAL_US">
           <AccordionHeader>
             <div class="flex flex-row items-center gap-2">
-              <span>Дополнительные значения <InlineFormulaView>u_{P,N}</InlineFormulaView></span>
+              <span>Дополнительные значения <InlineFormulaView value="u_{P,N}" /></span>
               <DocsButton :page="25" module="2.7." />
             </div>
           </AccordionHeader>
@@ -54,7 +54,7 @@
         <AccordionPanel value="ADDITIONAL_TS">
           <AccordionHeader>
             <div class="flex flex-row items-center gap-2">
-              <span>Дополнительные значения <InlineFormulaView>t_{P,N}</InlineFormulaView></span>
+              <span>Дополнительные значения <InlineFormulaView value="t_{P,N}" /></span>
               <DocsButton :page="21" module="2.6." />
             </div>
           </AccordionHeader>
