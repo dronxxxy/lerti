@@ -20,7 +20,7 @@
   const formulas = computed(() => props.result.rudeCleaning.map((stage) => stage.missSide ? `
     x_${{right: stage.sample.length - 1, left: 1, }[stage.missSide]} -
       x_${ { right: stage.sample.length - 2, left: 0, }[stage.missSide] } \\approx
-    ${stage.allowedDiff} ">" u \\cdot R = ${stage.u} \\cdot ${ {
+    ${stage.allowedDiff} > u \\cdot R = ${stage.u} \\cdot ${ {
       right: stage.rightDiff,
       left: stage.leftDiff,
     }[stage.missSide] } \\approx ${stage.u.mul({
