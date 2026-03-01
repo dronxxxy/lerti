@@ -1,7 +1,7 @@
 import Decimal from "decimal.js";
 import { DerivativeContext, ExecutionContext, Formula, FormulaLevel } from "../formula";
 import { MultiplyOperatorFormula } from "./operators";
-import { LnFormula } from "./ln";
+import { FunctionFormula, LnFormula } from "./ln";
 
 export class PowFormula extends Formula {
   constructor(
@@ -31,6 +31,9 @@ export class PowFormula extends Formula {
   }
 
   public toLatex(): string {
+    if (this.inner instanceof FunctionFormula) {
+      return `\\${this.inner.getName()} ^ ${this.power.toLatexPrioritized()} ${this.inner.inner.toLatexPrioritized(FormulaLevel.VALUE)}`;
+    }
     return `${this.inner.toLatexPrioritized(FormulaLevel.POW)} ^ ${this.power.toLatexPrioritized()}`;
   }
 

@@ -10,7 +10,7 @@ export abstract class FunctionFormula extends Formula {
     super();
   }
 
-  protected abstract getName(): string;
+  public abstract getName(): string;
   protected abstract directExecute(argument: Decimal): Decimal;
   protected abstract directDerivative(value: Formula): Formula;
   protected abstract sameType(value: Formula): boolean;
