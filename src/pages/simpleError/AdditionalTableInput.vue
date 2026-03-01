@@ -32,7 +32,7 @@ import InlineFormulaView from '@/components/math/InlineFormulaView.vue';
     <AccordionPanel value="0">
       <AccordionHeader>
         <div class="flex flex-row items-center gap-2">
-          <span>Стандартные значения при <InlineFormulaView>P = 95 \%</InlineFormulaView></span>
+          <span>Стандартные значения при <InlineFormulaView value="P = 95 \%"></InlineFormulaView></span>
           <DocsButton :page="75" />
         </div>
       </AccordionHeader>
