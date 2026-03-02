@@ -1,20 +1,44 @@
 <script setup lang="ts">
   import TableForApprox from './TableForApprox.vue';
-  import { Card } from 'primevue'
+  import { Card, SelectButton } from 'primevue'
   import useMinSquareMethod from '@/composables/approxMinSquare';
-  import { computed, watch } from 'vue'
+  import { ref, computed, watch } from 'vue'
   import { Chart } from 'vue-chartjs'
   import { Chart as ChartJS, Title, Tooltip, Legend, LineElement, CategoryScale, LinearScale, PointElement, type ChartData, type ChartDataset } from 'chart.js'
+  import InlineFormulaView from '@/components/math/InlineFormulaView.vue';
 
   ChartJS.register(Title, Tooltip, Legend, LineElement, CategoryScale, LinearScale, PointElement)
 
+  const tools=[
+    {
+      name:"Линейный"
+    },
+    {
+      name:"Экспоненциальный"
+    },
+    {
+      name:"Гиперболический"
+    }
+  ]
+  
+  let selgr = "";
+  const selectedTool = ref<string>("Линейный");
+
   const service = useMinSquareMethod()
 
-  watch([() => service.xValues.value, () => service.yValues.value], () => {
-    if (service.xValues.value?.length > 1 && service.yValues.value?.length > 1) {
-      service.approximate(service.xValues.value, service.yValues.value, "linear")
-    }
-  }, { deep: true })
+  watch([() => service.xValues.value, () => service.yValues.value, selectedTool], 
+    ([xVals, yVals, tool]) => {
+      if (xVals?.length > 1 && yVals?.length > 1) {
+        const methodMap: Record<string, string> = {
+          "Линейный": "linear",
+          "Экспоненциальный": "exponential",
+          "Гиперболический": "hyperbolic"
+        };
+        service.approximate(xVals, yVals, methodMap[tool])
+      }
+    }, 
+    { deep: true, immediate: true }
+  )
 
   const chartData = computed(() => {
     const xs= service.xValues.value || []
@@ -32,21 +56,39 @@
       if (v!=null){
         const kk = v.k.toNumber();
         const bb = v.b.toNumber();
+        let approxYVals: number[];
+      
+      if (selectedTool.value === 'Линейный') {
+        approxYVals = xVals.map((val) => kk * val + bb);
+        selgr="`y = ${service.result.value.k?.toFixed(4)} \\cdot x + ${service.result.value.b?.toFixed(4)}`";
+      } 
+      else if (selectedTool.value === 'Экспоненциальный') {
+        approxYVals = xVals.map((val) => bb * Math.exp(kk * val));
+        selgr="`y = ${service.result.value.k?.toFixed(4)} \\cdot  e^${service.result.value.b?.toFixed(4)} \\cdot x`";
+      } 
+      else if (selectedTool.value === 'Гиперболический') {
+        approxYVals = xVals.map((val) => kk / val + bb);
+        selgr="`y = ${service.result.value.k?.toFixed(4)} \\cdot x + ${service.result.value.b?.toFixed(4)}`";
+      } 
+      else {
+        selgr="`y = ${service.result.value.k?.toFixed(4)} \\cdot x + ${service.result.value.b?.toFixed(4)}`";
+        approxYVals = xVals.map((val) => kk * val + bb);
+      }
         return [
         {
           type:'scatter',
           label: 'Экспериментальные точки',
           data: yVals.map((y, i) => ({ y, x: xVals[i]! })),
-          borderColor: 'rgb(75, 192, 192)',
-          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          borderColor: 'rgb(34, 197, 94)',
+          backgroundColor: 'rgba(34, 197, 94, 0.2)',
           tension: 0.1,
           pointRadius: 5,
           pointHoverRadius: 8
         } , 
         {
           type:'line',
-          label: 'График аппроксимации (МНК)',
-          data: xVals.map((val)=>kk*val+bb),
+          label: `График аппроксимации (${selectedTool.value})`,
+          data: approxYVals,
           borderColor: 'rgb(255, 69, 0)',
           backgroundColor: 'rgba(255, 69, 0, 0.2)',
           tension: 0.1,
@@ -61,8 +103,8 @@
           type:'scatter',
           label: 'Экспериментальные точки',
           data: yVals.map((y, i) => ({ y, x: xVals[i]! })),
-          borderColor: 'rgb(75, 192, 192)',
-          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          borderColor: 'rgb(34, 197, 94)',
+          backgroundColor: 'rgba(34, 197, 94, 0.2)',
           tension: 0.1,
           pointRadius: 5,
           pointHoverRadius: 8
@@ -159,26 +201,33 @@
           <span>Результаты аппроксимации</span>
         </template>
         <template #content>
+          <div class="flex justify-center mb-3">
+          <SelectButton
+          v-model="selectedTool"
+          name="selection"
+          :options="tools.map((e) => e.name)"
+          />
+          </div>
           <div class="grid grid-cols-2 gap-4">
-            <div>
-              <div style="color: rgb(75, 192, 192);">Коэффициенты</div>
+<!--            <div>
+              <div style="color: rgb(34, 197, 94);">Коэффициенты</div>
               <div class="font-mono text-lg">
-                k = {{ service.result.value.k?.toFixed(4) }}<br>
-                b = {{ service.result.value.b?.toFixed(4) }}
+                <InlineFormulaView :value="`k = ${service.result.value.k?.toFixed(4)}`"/><br>
+                <InlineFormulaView :value="`b = ${service.result.value.b?.toFixed(4)}`"/>
               </div>
-            </div>
+            </div>-->
             <div>
-              <div style="color: rgb(75, 192, 192);">Качество аппроксимации</div>
-              <div class="font-mono text-gray-600">
-                R² = {{ service.result.value.Squared?.toFixed(4) }}
+              <div style="color: rgb(34, 197, 94);">Качество аппроксимации</div>
+              <div class="font-mono text-lg">
+                <InlineFormulaView :value="`R^2 = ${service.result.value.Squared?.toFixed(4)}`"/>
               </div>
             </div>
           </div>
           
-          <div class="mt-4 p-3 border border-green-200 rounded">
-            <div style="color: rgb(75, 192, 192);">Уравнение</div>
+          <div>
+            <div style="color: rgb(34, 197, 94);">Уравнение</div>
             <div class="font-mono text-lg">
-              y = {{ service.result.value.k?.toFixed(4) }}x + {{ service.result.value.b?.toFixed(4) }}
+              <InlineFormulaView :value=selgr/>
             </div>
           </div>
         </template>
@@ -186,9 +235,9 @@
       
       <Card v-else-if="service.xValues.value?.length > 0 || service.yValues.value?.length > 0">
         <template #content>
-          <div style="color: rgb(75, 192, 192);">
+          <div style="color: rgb(34, 197, 94);">
             Недостаточно данных для аппроксимации. 
-            Требуется минимум 2 пары точек. (Сейчас {{ pairsCount }} пар)
+            Требуется минимум 2 пары точек. (Сейчас 0 пар)
           </div>
         </template>
       </Card>
