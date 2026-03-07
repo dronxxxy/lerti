@@ -12,7 +12,7 @@ createApp(App)
       preset: Aura,
       options: {
         prefix: 'p',
-        darkModeSelector: 'system',
+        darkModeSelector: '.lerti-dark-theme',
         cssLayer: false
       }
     }

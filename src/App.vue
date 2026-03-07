@@ -1,8 +1,9 @@
 <script setup lang="ts">
-  import { Toolbar } from 'primevue';
+  import { Toolbar, Button, usePrimeVue } from 'primevue';
   import SelectButton from 'primevue/selectbutton';
   import { RouterView, useRouter, useRoute } from 'vue-router';
   import { ref, watch, onMounted, Transition } from 'vue';
+  import useTheme from './components/theming';
 
   const router = useRouter();
   const route = useRoute();
@@ -29,6 +30,9 @@
     selectedTool.value = tool ? tool.name : null;
   };
 
+  const theme = useTheme();
+  const switchTheme = () => theme.isDarkTheme.value = !theme.isDarkTheme.value;
+
   watch(selectedTool, (name) => {
     if (name) {
       const tool = tools.find(t => t.name === name);
@@ -51,6 +55,9 @@
         name="selection"
         :options="tools.map((e) => e.name)"
       />
+    </template>
+    <template #end>
+      <Button :icon="theme.isDarkTheme.value ? 'pi pi-moon' : 'pi pi-sun'" severity="secondary" raised @click="switchTheme" />
     </template>
   </Toolbar>
 
