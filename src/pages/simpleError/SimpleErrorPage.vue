@@ -8,7 +8,7 @@
   import { T_TABLE_95 } from '@/shared/math/sample';
   import DocsButton from '@/components/basics/DocsButton.vue';
   import CardList from '@/components/CardList.vue';
-  import SampleInput from '@/components/math/SampleInput.vue';
+  import DynamicSampleInput from '@/components/math/DynamicSampleInput.vue';
   import InputDecimal from '@/components/basics/InputDecimal.vue';
   import ContentCard from '@/components/basics/ContentCard.vue';
   import InlineFormulaView from '@/components/math/InlineFormulaView.vue';
@@ -22,7 +22,7 @@
       title="Выборка"
       :docs="{ page: 14, module: '2.2.' }"
     >
-      <SampleInput v-model="service.values.value"/>
+      <DynamicSampleInput v-model="service.values.value"/>
 
       <div class="flex flex-row items-center w-[100%] gap-2">
         <InputGroup>

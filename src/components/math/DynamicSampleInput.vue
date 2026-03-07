@@ -2,7 +2,7 @@
   import Decimal from 'decimal.js';
   import { Button, InputGroup } from 'primevue';
   import { computed, onMounted, ref } from 'vue';
-  import Sample from './Sample.vue';
+  import SampleInput from './SampleInput.vue';
   import { SAMPLE_INPUT_WIDTH } from '@/shared/constants';
 
   const model = defineModel<Decimal[]>({
@@ -27,7 +27,7 @@
 
 <template>
   <div class="flex flex-col gap-2 w-[100%]">
-    <Sample v-model="model" />
+    <SampleInput v-model="model" />
     <div class="flex flex-row gap-2">
       <div class="flex-1"></div>
       <div class="shrink-0">
