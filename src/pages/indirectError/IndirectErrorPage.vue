@@ -20,14 +20,14 @@
         .map(([varName, partial]) => `\\frac {df} {d${new VariableFormula(varName).toLatex()}} = ${ partial?.toLatex() ?? 0 }`),
       samples: result.samples.map((sample) => ({
         result: `f = ${sample.result.toFixed(2)}`,
-        error: `\\theta = \\sqrt {${
+        error: `\\Delta f = \\sqrt {${
               sample.derivatives
                 .map((derivative, i) => `\\left( ${derivative.toFixed(2)} \\cdot ${result.errors[i]!.toFixed(2)} \\right) ^ 2`)
                 .join(' + ')
             }} = ${sample.error.toFixed(2)}`
       })),
       result: `f = \\frac { ${result.samples.map((sample) => sample.result.toFixed(2)).join('+')} } ${result.samples.length} = ${result.average.toFixed(2)}`, 
-      error: `\\theta = \\frac \\sqrt { ${result.samples.map((sample) => `${sample.error.toFixed(2)} ^ 2`).join('+')} } ${result.samples.length} = ${result.error.toFixed(2)}`,
+      error: `\\Delta f = \\frac \\sqrt { ${result.samples.map((sample) => `${sample.error.toFixed(2)} ^ 2`).join('+')} } ${result.samples.length} = ${result.error.toFixed(2)}`,
       errorValue: result.error,
       resultValue: result.average,
     };
@@ -47,7 +47,7 @@
 
       <VarTableEditor :table="service.table" />
 
-      <Button :disabled="!service.canProcess.value" @click="service.process">Посчитать</Button>
+      <Button :disabled="!service.canProcess.value" @click="service.process">Вычислить</Button>
     </ContentCard>
 
     <ContentCard v-if="result" title="Результат">

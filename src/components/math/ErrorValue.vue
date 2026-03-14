@@ -10,11 +10,11 @@
     var: string,
   }>();
 
-  const formula = computed(() => `${roundValueString(props.value, props.error)} \\pm ${roundErrorString(props.error)}`)
+  const formula = computed(() => `f = ${roundValueString(props.value, props.error)} \\pm ${roundErrorString(props.error)}`)
 </script>
 
 <template>
   <div class="p-3 text-center">
-    <p class="text-2xl mt-3">Значение <InlineFormulaView :value="formula" /></p>
+    <p class="text-2xl mt-3">Значение: <InlineFormulaView :value="formula" /></p>
   </div>
 </template>
