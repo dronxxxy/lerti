@@ -63,7 +63,9 @@
 
   <RouterView v-slot="{ Component }">
     <Transition name="scale" mode="out-in">
-      <component :is="Component" :key="route.path" />
+      <keep-alive>
+        <component :is="Component" :key="route.path" />
+      </keep-alive>
     </Transition>
   </RouterView>
 </template>
