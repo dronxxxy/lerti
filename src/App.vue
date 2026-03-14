@@ -10,15 +10,15 @@
 
   const tools = [
     {
-      name: "Прямые погрешности",
+      name: "Прямые измерения",
       path: "/simpleError",
     },
     {
-      name: "Косвенные погрешности",
+      name: "Косвенные измерения",
       path: "/indirectError",
     },
     {
-      name: "Аппроксимация",
+      name: "Совместные измерения",
       path: "/approximation",
     },
   ];

@@ -10,7 +10,7 @@
     var: string,
   }>();
 
-  const formula = computed(() => `${ props.var } \\approx ${roundValueString(props.value, props.error)} \\pm ${roundErrorString(props.error)}`)
+  const formula = computed(() => `${roundValueString(props.value, props.error)} \\pm ${roundErrorString(props.error)}`)
 </script>
 
 <template>
